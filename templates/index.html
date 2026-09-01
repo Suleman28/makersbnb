@@ -1,17 +1,13 @@
-<!DOCTYPE html>
-<html>
-    <head>
+{% extends "base.html" %}
 
-        <!--
-            Head to https://github.com/makersacademy/web-applications-in-python/blob/main/pills/loading_css_or_static_files.md
-            If you're wondering how the CSS file below is being loaded.
-        -->
-        <link rel="stylesheet" href="/static/style.css" >
-        <title>MakersBnB</title>
-    </head>
-    <body>
-        {% include "components/navbar.html" %}
-        {% include "components/flash_messages.html" %}
-        <p>This is the homepage.</p>
-    </body>
-</html>
+{% block title %}MakersBnB{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-6xl px-6 py-12">
+    <section class="rounded-lg bg-white p-8 shadow-sm">
+        <h1 class="text-3xl font-bold tracking-tight">Welcome to MakersBnB</h1>
+        <p class="mt-4 text-slate-600">This is the homepage.</p>
+        <a href="/listings" class="mt-6 inline-block rounded-md bg-slate-900 px-4 py-2 text-white no-underline transition-colors hover:bg-slate-700">View listings</a>
+    </section>
+</main>
+{% endblock %}
