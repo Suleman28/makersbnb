@@ -24,12 +24,11 @@ Everyone in the team should then clone that copy of the repo to their local mach
 (makersbnb-venv); playwright install
 # If you have problems with the above, contact your coach
 
-# Create a test and development database
-(makersbnb-venv); createdb YOUR_PROJECT_NAME
-(makersbnb-venv); createdb YOUR_PROJECT_NAME_TEST
+# Copy the example env file and fill it in with your local settings
+(makersbnb-venv); cp .example.env .env
 
-# Open lib/database_connection.py and change the database names
-(makersbnb-venv); open lib/database_connection.py
+# Create the development and test databases
+(makersbnb-venv); ./bin/setup_dbs.sh
 
 # Run the tests (with extra logging)
 (makersbnb-venv); pytest -sv
@@ -39,3 +38,23 @@ Everyone in the team should then clone that copy of the repo to their local mach
 
 # Now visit http://localhost:5001/index in your browser
 ```
+
+## Environment variables
+
+The app reads its configuration from environment variables instead of having database names hardcoded in the source. `.example.env` is the template, committed to the repo so everyone can see what variables are needed. `.env` is your own local copy with real values filled in. It is gitignored, so it never gets committed and everyone's local setup can differ without conflicts.
+
+`.env` holds three variables:
+
+- `APP_ENV`, set to `development` locally. The app switches to `test` mode automatically when running under pytest.
+- `DATABASE_URL`, the connection string for your main development database.
+- `TEST_DATABASE_URL`, the connection string for a separate, disposable database used only by the test suite.
+
+`DATABASE_URL` and `TEST_DATABASE_URL` must point at different databases. The test suite drops and recreates tables between runs, so if they pointed at the same database, running the tests would wipe out your development data.
+
+## Database setup script
+
+`bin/setup_dbs.sh` reads `.env`, works out the database names from `DATABASE_URL` and `TEST_DATABASE_URL`, and creates them with `createdb` if they do not already exist. It is safe to run more than once. Run it any time after editing `.env`, or whenever you pull changes and are not sure your local databases are up to date.
+
+---
+
+In short, copy `.example.env` to `.env`, fill in your database URLs, then run `bin/setup_dbs.sh` to create the databases. This replaces the old workflow of manually running `createdb` and editing database names directly in `lib/database_connection.py`.

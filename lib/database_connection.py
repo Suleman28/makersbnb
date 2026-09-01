@@ -1,32 +1,29 @@
 import os, psycopg
+from dotenv import load_dotenv
 from flask import g
 from psycopg.rows import dict_row
 
+load_dotenv()
 
-# This class helps us interact with the database.
-# It wraps the underlying psycopg library that we are using.
-
-# If the below seems too complex right now, that's OK.
-# That's why we have provided it!
 class DatabaseConnection:
-    # VVV CHANGE BOTH OF THESE VVV
-    DEV_DATABASE_NAME = "DEFAULT_MAKERSBNB_PROJECT"
-    TEST_DATABASE_NAME = "DEFAULT_MAKERSBNB_PROJECT_TEST"
-
     def __init__(self, test_mode=False):
         self.connection = None
         self.test_mode = test_mode
 
-    # This method connects to PostgreSQL using the psycopg library. We connect
-    # to localhost and select the database name given in argument.
+    def _env_var_name(self):
+        return "TEST_DATABASE_URL" if self.test_mode else "DATABASE_URL"
+
+    # This method connects to PostgreSQL using the psycopg library, using the
+    # connection string built from our environment variables (see connect_string.env).
     def connect(self):
+        env_var = self._env_var_name()
         try:
             self.connection = psycopg.connect(
-                f"postgresql://localhost/{self._database_name()}",
+                self._connection_string(),
                 row_factory=dict_row)
         except psycopg.OperationalError:
-            raise Exception(f"Couldn't connect to the database {self._database_name()}! " \
-                    f"Did you create it using `createdb {self._database_name()}`?")
+            raise Exception(f"Couldn't connect to the database using {env_var}! " \
+                    f"Did you set it in your .env file? See .example.env for the expected format.")
 
     # This method seeds the database with the given SQL file.
     # We use it to set up our database ready for our tests or application.
@@ -62,12 +59,21 @@ class DatabaseConnection:
         if self.connection is None:
             raise Exception(self.CONNECTION_MESSAGE)
 
-    # This private method returns the name of the database we should use.
-    def _database_name(self):
-        if self.test_mode:
-            return self.TEST_DATABASE_NAME
-        else:
-            return self.DEV_DATABASE_NAME
+    # This private method returns the connection string we should use, read
+    # from the environment (see .example.env for the variables it expects).
+    def _connection_string(self):
+        env_var = self._env_var_name()
+        connection_string = os.getenv(env_var)
+        if not connection_string:
+            raise Exception(f"{env_var} is not set! Copy .example.env to .env and fill it in.")
+
+        # Guard against DATABASE_URL and TEST_DATABASE_URL being the same value:
+        # seed() drops tables, so this protects the main database from being wiped
+        # out by a test run.
+        if self.test_mode and connection_string == os.getenv("DATABASE_URL"):
+            raise Exception("TEST_DATABASE_URL must not be the same as DATABASE_URL!")
+
+        return connection_string
 
 # This function integrates with Flask to create one database connection that
 # Flask request can use. To see how to use it, look at example_routes.py
