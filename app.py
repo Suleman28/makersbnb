@@ -2,12 +2,10 @@ import os
 from flask import Flask, request, render_template, redirect, flash
 from werkzeug.security import generate_password_hash
 from lib.database_connection import get_flask_database_connection
-<<<<<<< HEAD
 from lib.user import User
 from lib.user_repository import UserRepository
-=======
 from lib.listing_repository import ListingRepository
->>>>>>> cbd6bdd (homepage template)
+
 
 # Create a new Flask app
 app = Flask(__name__)
@@ -23,7 +21,6 @@ app.secret_key = os.environ['SECRET_KEY']
 def get_index():
     return render_template('index.html')
 
-<<<<<<< HEAD
 @app.route('/signup', methods=['GET'])
 def get_signup():
   return render_template('signup.html')
@@ -48,11 +45,6 @@ def create_account():
   flash("Signed up successfully!")
   return redirect('/')
 
-
-# These lines start the server if you run this file directly
-# They also start the server configured to use the test database
-# if started in test mode.
-=======
 @app.route('/home', methods=['GET'])
 def get_home():
     connection = get_flask_database_connection(app)
@@ -60,6 +52,5 @@ def get_home():
     listings = repository.all()
     return render_template('home.html', listings=listings)
 
->>>>>>> cbd6bdd (homepage template)
 if __name__ == '__main__':
     app.run(debug=True, port=int(os.environ.get('PORT', 5001)))
