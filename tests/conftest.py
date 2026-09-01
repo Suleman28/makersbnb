@@ -1,4 +1,4 @@
-import pytest, sys, random, pytest, os
+import pytest, sys, random, os
 from pathlib import Path
 from xprocess import ProcessStarter
 from lib.database_connection import DatabaseConnection
