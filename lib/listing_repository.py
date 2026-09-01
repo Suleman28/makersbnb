@@ -10,13 +10,13 @@ class ListingRepository:
         listings = []
         for row in rows:
             item = Listing(
-                row["id"],
                 row["name"],
-                row["description"],
                 row["dates_available"],
-                row["price_per_night"],
+                row["price"],
                 row["image_url"],
+                row["description"],
                 row["user_id"],
+                row["id"],
             )
             listings.append(item)
         return listings
@@ -27,24 +27,24 @@ class ListingRepository:
         )
         row = rows[0]
         return Listing(
-            row["id"],
             row["name"],
-            row["description"],
             row["dates_available"],
-            row["price_per_night"],
+            row["price"],
             row["image_url"],
+            row["description"],
             row["user_id"],
+            row["id"],
         )
 
     def create(self, listing):
         self._connection.execute(
-            "INSERT INTO listings (name, description, dates_available, price_per_night, image_url, user_id) VALUES (%s, %s, %s, %s, %s, %s)",
+            "INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES (%s, %s, %s, %s, %s, %s)",
             [
                 listing.name,
-                listing.description,
                 listing.dates_available,
-                listing.price_per_night,
+                listing.price,
                 listing.image_url,
+                listing.description,
                 listing.user_id,
             ],
         )
