@@ -30,6 +30,15 @@ Everyone in the team should then clone that copy of the repo to their local mach
 # Create the development and test databases
 (makersbnb-venv); ./bin/setup_dbs.sh
 
+# Install pnpm if you don't have it already
+(makersbnb-venv); npm install -g pnpm
+
+# Install frontend dependencies (Tailwind CSS)
+(makersbnb-venv); pnpm install
+
+# Build the CSS, and keep rebuilding it as you edit templates
+(makersbnb-venv); pnpm watch:css
+
 # Run the tests (with extra logging)
 (makersbnb-venv); pytest -sv
 
@@ -41,20 +50,20 @@ Everyone in the team should then clone that copy of the repo to their local mach
 
 ## Environment variables
 
-The app reads its configuration from environment variables instead of having database names hardcoded in the source. `.example.env` is the template, committed to the repo so everyone can see what variables are needed. `.env` is your own local copy with real values filled in. It is gitignored, so it never gets committed and everyone's local setup can differ without conflicts.
+Config lives in `.env` (gitignored), copied from `.example.env`:
 
-`.env` holds three variables:
-
-- `APP_ENV`, set to `development` locally. The app switches to `test` mode automatically when running under pytest.
-- `DATABASE_URL`, the connection string for your main development database.
-- `TEST_DATABASE_URL`, the connection string for a separate, disposable database used only by the test suite.
-
-`DATABASE_URL` and `TEST_DATABASE_URL` must point at different databases. The test suite drops and recreates tables between runs, so if they pointed at the same database, running the tests would wipe out your development data.
+- `APP_ENV` - `development` locally, switches to `test` under pytest
+- `DATABASE_URL` - main dev database
+- `TEST_DATABASE_URL` - test database, must differ from `DATABASE_URL` (tests drop tables)
 
 ## Database setup script
 
-`bin/setup_dbs.sh` reads `.env`, works out the database names from `DATABASE_URL` and `TEST_DATABASE_URL`, and creates them with `createdb` if they do not already exist. It is safe to run more than once. Run it any time after editing `.env`, or whenever you pull changes and are not sure your local databases are up to date.
+`bin/setup_dbs.sh` creates `DATABASE_URL`/`TEST_DATABASE_URL` as databases if they don't exist yet. Safe to re-run.
+
+## Styling with Tailwind CSS
+
+Edit `static/src/input.css`, not `static/style.css` (that's the compiled output). `pnpm watch:css` rebuilds it on change - run it in its own terminal alongside `python app.py`.
 
 ---
 
-In short, copy `.example.env` to `.env`, fill in your database URLs, then run `bin/setup_dbs.sh` to create the databases. This replaces the old workflow of manually running `createdb` and editing database names directly in `lib/database_connection.py`.
+Quick start: `cp .example.env .env` → `./bin/setup_dbs.sh` → `pnpm install && pnpm watch:css`.
