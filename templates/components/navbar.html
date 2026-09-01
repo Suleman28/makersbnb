@@ -2,7 +2,14 @@
     <a href="/" class="text-xl font-bold text-slate-900 no-underline">MakersBnB</a>
     <div class="flex items-center gap-4">
         <a href="/listings" class="text-slate-600 no-underline transition-colors hover:text-slate-900">Listings</a>
-        <a href="/signin" class="text-slate-600 no-underline transition-colors hover:text-slate-900">Sign in</a>
-        <a href="/signup" class="rounded-md bg-slate-900 px-4 py-2 text-white no-underline transition-colors hover:bg-slate-700">Sign up</a>
+        {% if session.user_id %}
+        <span class="text-slate-600">Hello, {{ current_user.name }}</span>
+        <form method="POST" action="/sign_out">
+            <button type="submit" class="cursor-pointer border-none bg-transparent p-0 text-rose-500 hover:underline">Sign out</button>
+        </form>
+        {% else %}
+        <a href="/sign_in" class="text-slate-600 no-underline transition-colors hover:text-slate-900">Sign in</a>
+        <a href="/sign_up" class="rounded-md bg-slate-900 px-4 py-2 text-white no-underline transition-colors hover:bg-slate-700">Sign up</a>
+        {% endif %}
     </div>
 </nav>
