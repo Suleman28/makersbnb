@@ -10,12 +10,6 @@ from lib.listing_repository import ListingRepository
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
 
-# == Your Routes Here ==
-
-# GET /index
-# Returns the homepage
-# Try it:
-#   ; open http://localhost:5001/index
 @app.route('/', methods=['GET'])
 def get_index():
     return render_template('index.html')
@@ -44,12 +38,12 @@ def create_account():
   flash("Signed up successfully!")
   return redirect('/')
 
-@app.route('/home', methods=['GET'])
+@app.route('/listings', methods=['GET'])
 def get_home():
     connection = get_flask_database_connection(app)
     repository = ListingRepository(connection)
     listings = repository.all()
-    return render_template('home.html', listings=listings)
+    return render_template('listings.html', listings=listings)
 
 if __name__ == '__main__':
     app.run(debug=True, port=int(os.environ.get('PORT', 5001)))
