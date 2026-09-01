@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/style.css" >
+	<title>Sign Up | MakersBnb</title>
+</head>
+<body class="bg-slate-50 min-h-screen">
+  {% include "components/navbar.html" %}
+  {% include "components/flash_messages.html" %}
+  <div class="flex items-center justify-center px-4 py-12">
+    <form method="POST" action="/signup" class="bg-white shadow-sm rounded-lg p-8 w-full max-w-sm flex flex-col gap-4">
+        <h1 class="text-xl font-bold text-slate-900 mb-2">Sign up</h1>
+
+        {% if error %}
+          <p class="text-red-600 text-sm">{{ error }}</p>
+        {% endif %}
+
+        <div class="flex flex-col gap-1">
+          <label for="name" class="text-sm font-medium text-slate-700">Name</label>
+          <input type="text" name="name" id="name" required class="border border-slate-300 rounded-md px-3 py-2">
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="email" class="text-sm font-medium text-slate-700">Email</label>
+          <input type="email" name="email" id="email" required class="border border-slate-300 rounded-md px-3 py-2">
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="password" class="text-sm font-medium text-slate-700">Password</label>
+          <input type="password" name="password" id="password" required class="border border-slate-300 rounded-md px-3 py-2">
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="password_confirmation" class="text-sm font-medium text-slate-700">Password Confirmation</label>
+          <input type="password" name="password_confirmation" id="password_confirmation" required class="border border-slate-300 rounded-md px-3 py-2">
+        </div>
+
+        <button type="submit" class="bg-slate-900 text-white rounded-md px-4 py-2 mt-2 hover:bg-slate-700 transition-colors">Sign up</button>
+    </form>
+  </div>
+</body>
+</html>
