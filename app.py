@@ -7,7 +7,6 @@ from lib.user_repository import UserRepository
 from lib.listing_repository import ListingRepository
 
 
-# Create a new Flask app
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
 
