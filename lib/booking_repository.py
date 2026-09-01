@@ -11,7 +11,7 @@ class BookingRepository:
         rows = self._connection.execute('SELECT * from bookings')
         bookings = []
         for row in rows:
-            item = Booking(row["id"], row["start_date"], row["end_date"], row["status"], row["listing_id"])
+            item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["id"])
             bookings.append(item)
         return bookings
 
@@ -20,7 +20,7 @@ class BookingRepository:
         rows = self._connection.execute(
             'SELECT * from bookings WHERE id = %s', [booking_id])
         row = rows[0]
-        return Booking(row["id"], row["start_date"], row["end_date"], row["status"], row["listing_id"])
+        return Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["id"])
 
     # Create a new booking
     def create(self, booking):
