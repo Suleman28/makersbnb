@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-
 {% block title %}{{ listing.name }} | MakersBnB{% endblock %}
-
+{% block head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
 {% block content %}
 <main class="mx-auto max-w-6xl px-6 py-8">
     <a class="text-sm text-slate-500" href="{{ url_for('get_listings') }}">&larr; Back to listings</a>
-
     <article class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
         {% if listing.image_url %}
             <img
@@ -15,32 +15,62 @@
                 alt="{{ listing.name }}"
             >
         {% endif %}
-
         <div class="space-y-3 p-5">
             <h1 class="text-3xl font-bold tracking-tight">{{ listing.name }}</h1>
             <p class="text-sm leading-6 text-slate-700">{{ listing.description }}</p>
-
             <div class="border-t border-slate-100 pt-3">
                 <p class="text-sm text-slate-500">Available: {{ listing.dates_available }}</p>
                 <p class="mt-2 text-lg font-bold">£{{ listing.price }} <span class="text-sm font-normal text-slate-500">per night</span></p>
             </div>
-
             <section class="border-t border-slate-100 pt-3">
                 <h2 class="text-xl font-semibold">Choose your dates</h2>
+                <form method="POST" action="/bookings/new">
+                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                    <input type="hidden" name="start_date" id="start_date">
+                    <input type="hidden" name="end_date" id="end_date">
 
-                <div class="mt-4 grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <label class="text-sm font-medium" for="start-date">Start date</label>
-                        <input class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" type="date" id="start-date" name="start_date" required>
+                    <div class="mt-4">
+                        <input
+                            type="text"
+                            id="date-range"
+                            placeholder="Select date range"
+                            readonly
+                        >
                     </div>
 
-                    <div>
-                        <label class="text-sm font-medium" for="end-date">End date</label>
-                        <input class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" type="date" id="end-date" name="end_date" required>
-                    </div>
-                </div>
+                    <button
+                        type="submit"
+                        id="book-btn"
+                        disabled
+                        class="mt-4 rounded-md bg-slate-900 px-4 py-2 text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        Book
+                    </button>
+                </form>
             </section>
         </div>
     </article>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    flatpickr("#date-range", {
+        mode: "range",
+        inline: true,
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        onChange: function(selectedDates, dateStr, instance) {
+            const bookButton = document.getElementById("book-btn");
+            if (selectedDates.length === 2) {
+                document.getElementById("start_date").value = instance.formatDate(selectedDates[0], "Y-m-d");
+                document.getElementById("end_date").value = instance.formatDate(selectedDates[1], "Y-m-d");
+                bookButton.disabled = false;
+            } else {
+                document.getElementById("start_date").value = "";
+                document.getElementById("end_date").value = "";
+                bookButton.disabled = true;
+            }
+        }
+    });
+</script>
 {% endblock %}
