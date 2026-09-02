@@ -1,4 +1,4 @@
-from lib.user import User 
+from lib.user import User
 
 class UserRepository:
 
@@ -11,7 +11,7 @@ class UserRepository:
         rows = self._connection.execute('SELECT * from users')
         users = []
         for row in rows:
-            item = User(row["name"], row["email"], row["password"], row["password_confirmation"], row["id"])
+            item = User(row["name"], row["email"], row["password"], row["id"])
             users.append(item)
         return users
 
@@ -20,14 +20,22 @@ class UserRepository:
         rows = self._connection.execute(
             'SELECT * from users WHERE id = %s', [user_id])
         row = rows[0]
-        return User(row["name"], row["email"], row["password"], row["password_confirmation"], row["id"])
+        return User(row["name"], row["email"], row["password"], row["id"])
+
+    def find_by_email(self, email):
+        rows = self._connection.execute(
+             'SELECT * FROM users WHERE email = %s', [email])
+        if len(rows) == 0:
+          return None
+        row = rows[0]
+        return User(row["name"], row["email"], row["password"], row["id"])
 
     # Create a new user
     # Do you want to get its id back? Look into RETURNING id;
     def create(self, user):
-        self._connection.execute('INSERT INTO users (name, email, password, password_confirmation) VALUES (%s, %s, %s, %s)', [
-                                user.name, user.email, user.password, user.password_confirmation])
-        return None
+        result = self._connection.execute('INSERT INTO users (name, email, password) VALUES (%s, %s, %s) RETURNING id', [
+                                 user.name, user.email, user.password])
+        return result[0]['id']
 
     # Delete a user by their id
     def delete(self, user_id):

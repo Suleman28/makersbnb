@@ -10,6 +10,6 @@ class Booking:
         return self.__dict__ == other.__dict__
 
     def __repr__(self):
-        return f"The Booking details: ({self.listing_id}, {self.status}, {self.start_date}-{self.end_date})"
+        return f"The Booking details: ({self.listing_id}, {self.status}, {self.start_date}_{self.end_date})"
     
 
