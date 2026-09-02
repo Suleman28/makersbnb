@@ -2,6 +2,8 @@ import os
 from flask import Flask, request, render_template, redirect, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from lib.database_connection import get_flask_database_connection
+from lib.booking import Booking
+from lib.booking_repository import BookingRepository
 from lib.listing_repository import ListingRepository
 from lib.listing import Listing
 from lib.user import User
@@ -124,6 +126,26 @@ def create_listing(user_id):
     except Exception as e:
         flash(f"Failed to create listing: {str(e)}")
         return redirect(f"/users/{user_id}/listings/new")
+
+@app.route("/bookings", methods=["POST"])
+def create_booking():
+    listing_id = request.form["listing_id"]
+    start_date = request.form["start_date"]
+    end_date = request.form["end_date"]
+
+    connection = get_flask_database_connection(app)
+    repository = BookingRepository(connection)
+
+    if not repository.is_available(listing_id, start_date, end_date):
+        flash("Those dates are already booked.", "error")
+        return redirect(f"/single_listing/{listing_id}")
+
+    booking = Booking(start_date, end_date, "PENDING", listing_id)
+    repository.create(booking)
+
+    flash("Your booking request has been submitted.")
+    return redirect(f"/single_listing/{listing_id}")
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
