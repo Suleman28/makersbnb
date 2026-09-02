@@ -4,7 +4,7 @@
 
 {% block content %}
 <main class="flex items-center justify-center px-4 py-12">
-    <form method="POST" action="/signup" class="flex w-full max-w-sm flex-col gap-4 rounded-lg bg-white p-8 shadow-sm">
+    <form method="POST" action="/sign_up" class="flex w-full max-w-sm flex-col gap-4 rounded-lg bg-white p-8 shadow-sm">
         <h1 class="mb-2 text-xl font-bold text-slate-900">Sign up</h1>
 
         {% if error %}
@@ -33,7 +33,7 @@
 
         <button type="submit" class="mt-2 rounded-md bg-slate-900 px-4 py-2 text-white transition-colors hover:bg-slate-700">Sign up</button>
 
-        <p class="text-sm text-slate-600 text-center">Already have an account? <a href="/signin" class="text-slate-900 font-medium hover:underline">Sign in</a></p>
+        <p class="text-sm text-slate-600 text-center">Already have an account? <a href="/sign_in" class="text-slate-900 font-medium hover:underline">Sign in</a></p>
     </form>
 </main>
 {% endblock %}
