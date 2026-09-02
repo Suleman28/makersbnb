@@ -50,6 +50,13 @@ def get_listings():
     listings = repository.all()
     return render_template("listings.html", listings=listings)
 
+@app.route("/single_listing/<int:listing_id>", methods=["GET"])
+def single_listing(listing_id):
+    connection = get_flask_database_connection(app)
+    repository = ListingRepository(connection)
+    listing = repository.find(listing_id)
+    return render_template("single_listing.html", listing=listing)
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
