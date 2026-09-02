@@ -25,7 +25,7 @@ class BookingRepository:
     # Create a new booking
     def create(self, booking):
         self._connection.execute('INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES (%s, %s, %s, %s)', [
-                                 booking.start_date, booking.end_date, booking.status, booking.listing_id])
+                                booking.start_date, booking.end_date, booking.status, booking.listing_id])
         return None
 
     # Delete a booking by its id
