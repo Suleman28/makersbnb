@@ -28,17 +28,23 @@
             <section class="border-t border-slate-100 pt-3">
                 <h2 class="text-xl font-semibold">Choose your dates</h2>
 
-                <div class="mt-4 grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <label class="text-sm font-medium" for="start-date">Start date</label>
-                        <input class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" type="date" id="start-date" name="start_date" required>
+                <form method="POST" action="{{ url_for('create_booking') }}">
+                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+
+                    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="text-sm font-medium" for="start-date">Start date</label>
+                            <input class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" type="date" id="start-date" name="start_date" required>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium" for="end-date">End date</label>
+                            <input class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" type="date" id="end-date" name="end_date" required>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="text-sm font-medium" for="end-date">End date</label>
-                        <input class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" type="date" id="end-date" name="end_date" required>
-                    </div>
-                </div>
+                    <button class="mt-4 rounded-md bg-slate-900 px-4 py-2 text-white" type="submit">Request booking</button>
+                </form>
             </section>
         </div>
     </article>

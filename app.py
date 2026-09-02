@@ -2,6 +2,8 @@ import os
 from flask import Flask, request, render_template, redirect, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from lib.database_connection import get_flask_database_connection
+from lib.booking import Booking
+from lib.booking_repository import BookingRepository
 from lib.listing_repository import ListingRepository
 from lib.user import User
 from lib.user_repository import UserRepository
@@ -89,6 +91,23 @@ def single_listing(listing_id):
     repository = ListingRepository(connection)
     listing = repository.find(listing_id)
     return render_template("single_listing.html", listing=listing)
+
+
+@app.route("/bookings", methods=["POST"])
+def create_booking():
+    listing_id = request.form["listing_id"]
+    booking = Booking(
+        request.form["start_date"],
+        request.form["end_date"],
+        "PENDING",
+        listing_id,
+    )
+
+    connection = get_flask_database_connection(app)
+    BookingRepository(connection).create(booking)
+
+    flash("Your booking request has been submitted.")
+    return redirect(f"/single_listing/{listing_id}")
 
 
 if __name__ == "__main__":
