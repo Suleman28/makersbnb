@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, render_template, redirect, flash
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from lib.database_connection import get_flask_database_connection
 from lib.listing_repository import ListingRepository
 from lib.user import User
@@ -41,6 +41,26 @@ def create_account():
 
     flash("Signed up successfully!")
     return redirect("/")
+
+@app.route('/signin', methods=['GET'])
+def get_signin():
+  return render_template('signin.html')
+
+@app.route('/signin', methods=['POST'])
+def sign_in():
+  email = request.form['email']
+  password = request.form['password']
+
+  connection = get_flask_database_connection(app)
+  repository = UserRepository(connection)
+  user = repository.find_by_email(email)
+
+  if user is not None and check_password_hash(user.password, password):
+    flash("Sign in successful")
+    return redirect('/')
+  else:
+    return render_template('signin.html', error="invalid email or password, please try again."), 401
+
 
 
 @app.route("/listings", methods=["GET"])

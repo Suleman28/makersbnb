@@ -22,6 +22,14 @@ class UserRepository:
         row = rows[0]
         return User(row["name"], row["email"], row["password"], row["id"])
 
+    def find_by_email(self, email):
+        rows = self._connection.execute(
+             'SELECT * FROM users WHERE email = %s', [email])
+        if len(rows) == 0:
+          return None
+        row = rows[0]
+        return User(row["name"], row["email"], row["password"], row["id"])
+
     # Create a new user
     # Do you want to get its id back? Look into RETURNING id;
     def create(self, user):
