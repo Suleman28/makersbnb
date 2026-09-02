@@ -96,15 +96,18 @@ def single_listing(listing_id):
 @app.route("/bookings", methods=["POST"])
 def create_booking():
     listing_id = request.form["listing_id"]
-    booking = Booking(
-        request.form["start_date"],
-        request.form["end_date"],
-        "PENDING",
-        listing_id,
-    )
+    start_date = request.form["start_date"]
+    end_date = request.form["end_date"]
 
     connection = get_flask_database_connection(app)
-    BookingRepository(connection).create(booking)
+    repository = BookingRepository(connection)
+
+    if not repository.is_available(listing_id, start_date, end_date):
+        flash("Those dates are already booked.", "error")
+        return redirect(f"/single_listing/{listing_id}")
+
+    booking = Booking(start_date, end_date, "PENDING", listing_id)
+    repository.create(booking)
 
     flash("Your booking request has been submitted.")
     return redirect(f"/single_listing/{listing_id}")
