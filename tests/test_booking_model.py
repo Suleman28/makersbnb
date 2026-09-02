@@ -32,7 +32,7 @@ def testing_third_line_of_seed_booking():
     assert booking.id == 3
     assert booking.start_date ==  "2027-01-11"
     assert booking.end_date == "2027-01-13"
-    assert booking.status == "PENDING"
+    assert booking.status == "BOOKED"
     assert booking.listing_id == 1
     assert repr(booking) == "The Booking details: (1, BOOKED, 2027-01-11_2027-01-13)"
 
