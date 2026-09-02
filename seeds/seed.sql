@@ -38,14 +38,16 @@ CREATE TABLE bookings (
         REFERENCES listings(id) ON DELETE CASCADE
 );
 
-INSERT INTO users (name, email, password) VALUES ('Peter Puffin', 'pp@email.com', '12345678');
+INSERT INTO users (name, email, password) VALUES ('Peter Puffin', 'pp@email.com', '12445778');
 INSERT INTO users (name, email, password) VALUES ('Polly Penguin', 'pollyp@email.com', '12345678');
-INSERT INTO users (name, email, password) VALUES ('Quentin Quail', 'qq@email.com', '12345678');
+INSERT INTO users (name, email, password) VALUES ('Quentin Quail', 'qq@email.com', '12649670');
+INSERT INTO users (name, email, password) VALUES ('Spears Sparrow', 'spears@email.com', '12242650');
 
-INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES ('Clifftop Retreat', '2027-01-01, 2028-12-12', 100.99, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8MC4BiSkd9JxMt3cEdVi4Tj_Xhi9zviXIS4PsGRlPYZMBVnOHMqtPk46D&s=10', 'A fantastic place for a puffin, or maybe a seagull, great views.', 1);
+INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES ('Clifftop Retreat', '2027-01-01, 2028-12-12', 100.99, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8MC4BiSkd9JxMt3cEdVi4Tj_Xhi9zviXIS4PsGRlPYZMBVnOHMqtPk46D&s=10', 'A fantastic place for a puffin, or maybe a seagull, great views.', 3);
 INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES ('Polar Igloo', '2027-01-01, 2028-12-12', 45.99, 'https://www.lightailing.com/cdn/shop/articles/Polar_Igloo_cover.jpg?v=1568024538', 'A marvellous joint, if a bit chilly.', 2);
-INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES ('Bush Lovers Bothy', '2027-01-01, 2028-12-12', 75.86, 'https://media.newyorker.com/photos/661e7b9dee3bbf86940d41d9/master/w_2560%2Cc_limit/Keeley-Treehouse.jpg', 'A brilliant abode, get your mud baths in!', 2);
+INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES ('Bush Lovers Bothy', '2027-01-01, 2028-12-12', 75.86, 'https://media.newyorker.com/photos/661e7b9dee3bbf86940d41d9/master/w_2560%2Cc_limit/Keeley-Treehouse.jpg', 'A brilliant abode, get your mud baths in!', 4);
 
-INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-05', '2027-01-10', 'PENDING', 2);
-INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-05', '2027-01-10', 'PENDING', 3);
-INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-11', '2027-01-13', 'BOOKED', 3);
+INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-05', '2027-01-10', 'PENDING', 1);
+INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-05', '2027-01-12', 'PENDING', 2);
+INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-11', '2027-01-13', 'BOOKED', 1);
+INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-23', '2027-01-25', 'BOOKED', 3);
