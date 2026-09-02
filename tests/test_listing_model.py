@@ -1,6 +1,8 @@
 import sys
 import os 
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from lib.listing import Listing
 
 def testing_clifftop_retreat_seed_listing_works():
