@@ -3,6 +3,7 @@ from flask import Flask, request, render_template, redirect, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from lib.database_connection import get_flask_database_connection
 from lib.listing_repository import ListingRepository
+from lib.listing import Listing
 from lib.user import User
 from lib.user_repository import UserRepository
 
@@ -90,6 +91,33 @@ def single_listing(listing_id):
     listing = repository.find(listing_id)
     return render_template("single_listing.html", listing=listing)
 
+@app.route("/listings/new", methods=["GET"])
+def new_listing():
+    if "user_id" not in session:
+        flash("You must be logged in to create a listing")
+        return redirect("/")
+    return render_template("new_listing.html")
+
+@app.route("/listings/new", methods={"POST"})
+def create_listing():
+    if "user_id" not in session:
+        flash("You must be logged in to create a listing")
+        return redirect("/")
+    connection = get_flask_database_connection(app)
+    repository = ListingRepository(connection)
+    listing_name = request.form["listing_name"]
+    listing_dates_available = request.form["listing_dates_available"]
+    listing_price = request.form["listing_price"]
+    listing_image_url = request.form["listing_image_url"]
+    listing_description = request.form["listing_description"]
+    listing_user_id = session["user_id"]
+    try:
+        repository.create(Listing(listing_name, listing_dates_available, listing_price, listing_image_url, listing_description, listing_user_id))
+        flash("Listing created successfully")
+        return redirect("/listings")
+    except Exception as e:
+        flash(f"Failed to create listing: {str(e)}"), 401
+        return redirect("/listings/new")
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
