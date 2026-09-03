@@ -1,4 +1,6 @@
 import pytest
+from flask import session
+
 
 SEED_FILE = "seeds/seed.sql"
 
@@ -44,7 +46,6 @@ def test_create_account_sets_session(web_client):
             "password_confirmation": "password123",
         },
     )
-    from flask import session
     assert session["user_id"] is not None
 
 
@@ -86,7 +87,6 @@ def test_sign_in_sets_session(web_client):
         "/sign_in",
         data={"email": "pp@email.com", "password": "12445778"},
     )
-    from flask import session
     assert session["user_id"] == 1
 
 
@@ -115,8 +115,6 @@ def test_sign_out_clears_session(web_client):
     response = web_client.post("/sign_out")
     assert response.status_code == 302
     assert response.location == "/"
-
-    from flask import session
     assert "user_id" not in session
 
 
