@@ -2,7 +2,7 @@
 {% block title %}Create a New Listing | MakersBnB{% endblock %}
 {% block content %}
 <main class="flex items-center justify-center px-4 py-12">
-    <form method="POST" action="/listings/new" id="new-listing-form" class="flex w-full max-w-sm flex-col gap-4 rounded-lg bg-white p-8 shadow-sm">
+    <form method="POST" action="/users/{{session.user_id}}/listings/new" id="new-listing-form" class="flex w-full max-w-sm flex-col gap-4 rounded-lg bg-white p-8 shadow-sm">
         <h1 class="mb-2 text-xl font-bold text-slate-900">Create a listing</h1>
         {% if error %}
           <p class="text-sm text-red-600">{{ error }}</p>

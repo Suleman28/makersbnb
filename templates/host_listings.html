@@ -36,14 +36,8 @@
                 </div>
 
                 <div class="mt-3 flex gap-3">
-                    <a href="/listings/{{ listing.id }}" class="text-sky-600 hover:underline">View</a>
+                    <a href="/listings/{{ listing.id }}" class="text-sky-600 hover:underline">View Listing</a>
                     <!-- Optional: add edit/delete routes if implemented -->
-                    <a href="/users/{{ current_user.id }}/listings/{{ listing.id }}/edit"
-                        class="text-slate-600 hover:underline">Edit</a>
-                    <form action="/users/{{ current_user.id }}/listings/{{ listing.id }}/delete" method="post"
-                        class="inline">
-                        <button type="submit" class="text-red-600 hover:underline">Delete</button>
-                    </form>
                 </div>
             </div>
         </article>
