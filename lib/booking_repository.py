@@ -33,3 +33,21 @@ class BookingRepository:
         self._connection.execute(
             'DELETE FROM bookings WHERE id = %s', [booking_id])
         return None
+
+    # Update the status of a booking
+    def update_booking_status_managed_by_host(self, booking_id, status):
+        self._connection.execute(
+            'UPDATE bookings SET status = %s WHERE id = %s', [status, booking_id])
+        return None
+
+    # Retrieve all bookings made against a single listing
+    def find_all_listings(self, listing_id):
+        rows = self._connection.execute(
+            'SELECT * from bookings ' \
+            'WHERE listing_id = %s ' \
+            'ORDER BY id', [listing_id])
+        bookings = []
+        for row in rows:
+            item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["id"])
+            bookings.append(item)
+        return bookings
