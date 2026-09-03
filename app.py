@@ -82,7 +82,7 @@ def destroy_session():
 
 
 @app.route("/listings", methods=["GET"])
-def get_listings():
+def get_guest_listings():
     connection = get_flask_database_connection(app)
     repository = ListingRepository(connection)
     listings = repository.all()
@@ -94,6 +94,19 @@ def single_listing(listing_id):
     repository = ListingRepository(connection)
     listing = repository.find(listing_id)
     return render_template("single_listing.html", listing=listing)
+
+@app.route("/users/<int:user_id>/listings", methods=["GET"])
+def get_host_listings(user_id):
+    if "user_id" not in session:
+        flash("You must be logged in to view your listings")
+        return redirect("/")
+    if session["user_id"] != user_id:
+        flash("You can only view your own listings")
+        return redirect("/")
+    connection = get_flask_database_connection(app)
+    repository = ListingRepository(connection)
+    listings = [l for l in repository.all() if int(l.user_id) == int(user_id)]
+    return render_template("host_listings.html", listings=listings)
 
 @app.route("/users/<int:user_id>/listings/new", methods=["GET"])
 def new_listing(user_id):
