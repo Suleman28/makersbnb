@@ -11,7 +11,7 @@ class BookingRepository:
         rows = self._connection.execute('SELECT * from bookings')
         bookings = []
         for row in rows:
-            item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["id"])
+            item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["user_id"], row["id"])
             bookings.append(item)
         return bookings
 
@@ -20,7 +20,7 @@ class BookingRepository:
         rows = self._connection.execute(
             'SELECT * from bookings WHERE id = %s', [booking_id])
         row = rows[0]
-        return Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["id"])
+        return Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["user_id"], row["id"])
 
     # Check whether a listing has an overlapping confirmed booking
     def is_available(self, listing_id, start_date, end_date):
@@ -38,8 +38,8 @@ class BookingRepository:
 
     # Create a new booking
     def create(self, booking):
-        self._connection.execute('INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES (%s, %s, %s, %s)', [
-                                booking.start_date, booking.end_date, booking.status, booking.listing_id])
+        self._connection.execute('INSERT INTO bookings (start_date, end_date, status, listing_id, user_id) VALUES (%s, %s, %s, %s, %s)', [
+                                 booking.start_date, booking.end_date, booking.status, booking.listing_id, booking.user_id])
         return None
 
     # Delete a booking by its id
@@ -47,3 +47,13 @@ class BookingRepository:
         self._connection.execute(
             'DELETE FROM bookings WHERE id = %s', [booking_id])
         return None
+
+    def find_by_user(self, user_id):
+        rows = self._connection.execute(
+            'SELECT * from bookings WHERE user_id = %s', [user_id])
+        bookings = []
+        for row in rows:
+            item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["user_id"], row["id"])
+            bookings.append(item)
+        return bookings
+        

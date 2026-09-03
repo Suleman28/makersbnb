@@ -8,6 +8,8 @@ from lib.listing_repository import ListingRepository
 from lib.listing import Listing
 from lib.user import User
 from lib.user_repository import UserRepository
+from lib.booking import Booking
+from lib.booking_repository import BookingRepository
 
 
 app = Flask(__name__)
@@ -145,6 +147,22 @@ def create_booking():
 
     flash("Your booking request has been submitted.")
     return redirect(f"/single_listing/{listing_id}")
+
+
+@app.route("/users/<int:user_id>/bookings", methods={"GET"})
+def get_travel_bookings(user_id):
+    if "user_id" not in session:
+        flash("You must be logged in to view your bookings")
+        return redirect("/")
+    connection = get_flask_database_connection(app)
+    booking_repository = BookingRepository(connection)
+    listing_repository = ListingRepository(connection)
+    bookings = booking_repository.find_by_user(session['user_id'])
+    listings = []
+    for booking in bookings:
+       listing = listing_repository.find(booking.listing_id)
+       listings.append(listing)
+    return render_template("user_bookings.html", booking_pairs=list(zip(bookings, listings)))
 
 
 if __name__ == "__main__":

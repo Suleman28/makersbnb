@@ -33,9 +33,12 @@ CREATE TABLE bookings (
     end_date DATE NOT NULL,
     status VARCHAR(10) NOT NULL,
     listing_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_bookings_listing FOREIGN KEY (listing_id)
-        REFERENCES listings(id) ON DELETE CASCADE
+        REFERENCES listings(id) ON DELETE CASCADE,
+    CONSTRAINT fk_bookings_user FOREIGN KEY (user_id)
+        REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Passwords below are werkzeug scrypt hashes. Plaintext passwords, for signing in during testing:
@@ -49,7 +52,7 @@ INSERT INTO listings (name, dates_available, price, image_url, description, user
 INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES ('Polar Igloo', '2027-01-01, 2028-12-12', 45.99, 'https://www.lightailing.com/cdn/shop/articles/Polar_Igloo_cover.jpg?v=1568024538', 'A marvellous joint, if a bit chilly.', 2);
 INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES ('Bush Lovers Bothy', '2027-01-01, 2028-12-12', 75.86, 'https://media.newyorker.com/photos/661e7b9dee3bbf86940d41d9/master/w_2560%2Cc_limit/Keeley-Treehouse.jpg', 'A brilliant abode, get your mud baths in!', 4);
 
-INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-05', '2027-01-10', 'PENDING', 1);
-INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-05', '2027-01-12', 'PENDING', 2);
-INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-11', '2027-01-13', 'BOOKED', 1);
-INSERT INTO bookings (start_date, end_date, status, listing_id) VALUES ('2027-01-23', '2027-01-25', 'BOOKED', 3);
+INSERT INTO bookings (start_date, end_date, status, listing_id, user_id) VALUES ('2027-01-05', '2027-01-10', 'PENDING', 1, 2);
+INSERT INTO bookings (start_date, end_date, status, listing_id, user_id) VALUES ('2027-01-05', '2027-01-12', 'PENDING', 2, 3);
+INSERT INTO bookings (start_date, end_date, status, listing_id, user_id) VALUES ('2027-01-11', '2027-01-13', 'BOOKED', 1, 4);
+INSERT INTO bookings (start_date, end_date, status, listing_id, user_id) VALUES ('2027-01-23', '2027-01-25', 'BOOKED', 3, 1);
