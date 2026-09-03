@@ -182,5 +182,50 @@ def get_travel_bookings(user_id):
     return render_template("user_bookings.html", booking_pairs=list(zip(bookings, listings)))
 
 
+@app.route("/listings/<int:listing_id>/bookings/<int:booking_id>", methods=["GET"])
+def check_on_single_booking(listing_id, booking_id):
+    if "user_id" not in session:
+        flash("You must be logged in to view booking requests")
+        return redirect("/")
+    connection = get_flask_database_connection(app)
+    listing_repository = ListingRepository(connection)
+    listing = listing_repository.find(listing_id)
+    if listing.user_id != session["user_id"]:
+        flash("You can only view booking requests for your own listings")
+        return redirect("/")
+    booking_repository = BookingRepository(connection)
+    booking = booking_repository.find(booking_id)
+    if booking.listing_id != listing_id:
+        flash("Booking not found for this listing")
+        return redirect(f"/users/{session['user_id']}/listings/{listing_id}/bookings") #should hopefully work?
+    return render_template("single_booking.html", listing=listing, booking=booking)
+
+@app.route("/listings/<int:listing_id>/bookings/<int:booking_id>/approve", methods=["POST"])
+def approve_booking(listing_id, booking_id):
+    return update_booking_status(listing_id, booking_id, "BOOKED")
+
+@app.route("/listings/<int:listing_id>/bookings/<int:booking_id>/deny", methods=["POST"])
+def deny_booking(listing_id, booking_id):
+    return update_booking_status(listing_id, booking_id, "DECLINED")
+
+def update_booking_status(listing_id, booking_id, status):
+    if "user_id" not in session:
+        flash("You must be logged in to manage booking requests")
+        return redirect("/")
+    connection = get_flask_database_connection(app)
+    listing_repository = ListingRepository(connection)
+    listing = listing_repository.find(listing_id)
+    if listing.user_id != session["user_id"]:
+        flash("You can only manage bookings for your own listings")
+        return redirect("/")
+    booking_repository = BookingRepository(connection)
+    booking = booking_repository.find(booking_id)
+    if booking.listing_id != listing_id:
+        flash("Booking not found for this listing")
+        return redirect(f"/users/{session['user_id']}/listings/{listing_id}/bookings") #should work hopefully!
+    booking_repository.update_status_managed_by_host(booking_id, status)
+    flash(f"Booking {status.lower()}")
+    return redirect(f"/users/{session['user_id']}/listings/{listing_id}/bookings")
+
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
