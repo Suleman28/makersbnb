@@ -3,10 +3,13 @@
 {% block title %}MakersBnB{% endblock %}
 
 {% block content %}
-<section class="flex min-h-[70vh] w-full flex-col items-center justify-center bg-[url(/static/assets/beach.jpg)] bg-cover bg-center bg-no-repeat p-8 text-center">
-    <h1 class="text-3xl font-bold tracking-tight text-white">Welcome to MakersBnB</h1>
-    <p class="mt-4 text-white">Find a little nest for your next holiday</p>
-    <a href="/listings" class="mt-6 inline-block rounded-md bg-white px-4 py-2 text-slate-900 no-underline transition-colors hover:bg-slate-300">View listings</a>
+<section class="relative flex min-h-[70vh] w-full flex-col items-center justify-center bg-[url(/static/assets/beach.jpg)] bg-cover bg-center bg-no-repeat text-center">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="relative z-10 p-8">
+        <h1 class="text-3xl font-bold tracking-tight text-white">Welcome to MakersBnB</h1>
+        <p class="mt-4 text-white">Find a little nest for your next holiday</p>
+        <a href="/listings" class="mt-6 inline-block rounded-md bg-white px-4 py-2 text-slate-900 no-underline transition-colors hover:bg-slate-300">View listings</a>
+    </div>
 </section>
 
 {% if listings %}
