@@ -2,6 +2,8 @@ import os
 from flask import Flask, request, render_template, redirect, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from lib.database_connection import get_flask_database_connection
+from lib.booking import Booking
+from lib.booking_repository import BookingRepository
 from lib.listing_repository import ListingRepository
 from lib.listing import Listing
 from lib.user import User
@@ -86,24 +88,30 @@ def get_listings():
     listings = repository.all()
     return render_template("listings.html", listings=listings)
 
-@app.route("/single_listing/<int:listing_id>", methods=["GET"])
+@app.route("/listings/<int:listing_id>", methods=["GET"])
 def single_listing(listing_id):
     connection = get_flask_database_connection(app)
     repository = ListingRepository(connection)
     listing = repository.find(listing_id)
     return render_template("single_listing.html", listing=listing)
 
-@app.route("/listings/new", methods=["GET"])
-def new_listing():
+@app.route("/users/<int:user_id>/listings/new", methods=["GET"])
+def new_listing(user_id):
     if "user_id" not in session:
         flash("You must be logged in to create a listing")
         return redirect("/")
+    if session["user_id"] != user_id:
+        flash("You can only create listings under your own account")
+        return redirect("/")
     return render_template("new_listing.html")
 
-@app.route("/listings/new", methods={"POST"})
-def create_listing():
+@app.route("/users/<int:user_id>/listings/new", methods=["POST"])
+def create_listing(user_id):
     if "user_id" not in session:
         flash("You must be logged in to create a listing")
+        return redirect("/")
+    if session["user_id"] != user_id:
+        flash("You can only create listings under your own account")
         return redirect("/")
     connection = get_flask_database_connection(app)
     repository = ListingRepository(connection)
@@ -118,8 +126,28 @@ def create_listing():
         flash("Listing created successfully")
         return redirect("/listings")
     except Exception as e:
-        flash(f"Failed to create listing: {str(e)}"), 401
-        return redirect("/listings/new")
+        flash(f"Failed to create listing: {str(e)}")
+        return redirect(f"/users/{user_id}/listings/new")
+
+@app.route("/bookings", methods=["POST"])
+def create_booking():
+    listing_id = request.form["listing_id"]
+    start_date = request.form["start_date"]
+    end_date = request.form["end_date"]
+
+    connection = get_flask_database_connection(app)
+    repository = BookingRepository(connection)
+
+    if not repository.is_available(listing_id, start_date, end_date):
+        flash("Those dates are already booked.", "error")
+        return redirect(f"/single_listing/{listing_id}")
+
+    booking = Booking(start_date, end_date, "PENDING", listing_id)
+    repository.create(booking)
+
+    flash("Your booking request has been submitted.")
+    return redirect(f"/single_listing/{listing_id}")
+
 
 @app.route("/users/<int:user_id>/bookings", methods={"GET"})
 def get_travel_bookings(user_id):

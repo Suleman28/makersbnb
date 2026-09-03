@@ -41,10 +41,12 @@ CREATE TABLE bookings (
         REFERENCES users(id) ON DELETE CASCADE
 );
 
-INSERT INTO users (name, email, password) VALUES ('Peter Puffin', 'pp@email.com', '12445778');
-INSERT INTO users (name, email, password) VALUES ('Polly Penguin', 'pollyp@email.com', '12345678');
-INSERT INTO users (name, email, password) VALUES ('Quentin Quail', 'qq@email.com', '12649670');
-INSERT INTO users (name, email, password) VALUES ('Spears Sparrow', 'spears@email.com', '12242650');
+-- Passwords below are werkzeug scrypt hashes. Plaintext passwords, for signing in during testing:
+-- Peter Puffin: 12445778 | Polly Penguin: 12345678 | Quentin Quail: 12649670 | Spears Sparrow: 12242650
+INSERT INTO users (name, email, password) VALUES ('Peter Puffin', 'pp@email.com', 'scrypt:32768:8:1$NS42sOePszYHDQW6$9872c8fd9fa3e41bb99f8ad55420e66a2c8f25c6e3ea5cf7b82c51a3e4dc0ae6cbbf145fe64446d619ac33dc2a69685958d8aef19b3912904bcc2732d4dc9693');
+INSERT INTO users (name, email, password) VALUES ('Polly Penguin', 'pollyp@email.com', 'scrypt:32768:8:1$d6MNCa3Rq5xTJoVN$f96b93f3289a8b2543ba7c3c778905d6b94f87f2e035f5b2fbb9a47aebccbcd4836afb47f7952dd33b3c7c8633816034398e25cf5255a4f1eaea5015ec2e51b8');
+INSERT INTO users (name, email, password) VALUES ('Quentin Quail', 'qq@email.com', 'scrypt:32768:8:1$SpSc2sKn7y7QM7Pd$aeb4f32ae6317a4fb1d1c0eaefe075f6a2334fd681b0c4b4cecfe5f890e78884c7bae7d4eb31f2e7542d83a5b51d767b1361f6caf1838b0671b70444731d853e');
+INSERT INTO users (name, email, password) VALUES ('Spears Sparrow', 'spears@email.com', 'scrypt:32768:8:1$lhO1WyJN97O7zdnm$ff0dfcb13b8890460bba985cff78e32696cc8c28995289a371d0cde7f58ef1cabd98a868eb269984da651f6f8122580b9869001a771b74651285f5669e7a08d1');
 
 INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES ('Clifftop Retreat', '2027-01-01, 2028-12-12', 100.99, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8MC4BiSkd9JxMt3cEdVi4Tj_Xhi9zviXIS4PsGRlPYZMBVnOHMqtPk46D&s=10', 'A fantastic place for a puffin, or maybe a seagull, great views.', 3);
 INSERT INTO listings (name, dates_available, price, image_url, description, user_id) VALUES ('Polar Igloo', '2027-01-01, 2028-12-12', 45.99, 'https://www.lightailing.com/cdn/shop/articles/Polar_Igloo_cover.jpg?v=1568024538', 'A marvellous joint, if a bit chilly.', 2);
