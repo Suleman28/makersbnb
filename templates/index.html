@@ -3,11 +3,9 @@
 {% block title %}MakersBnB{% endblock %}
 
 {% block content %}
-<main class="mx-auto max-w-6xl px-6 py-12">
-    <section class="rounded-lg bg-white p-8 shadow-sm">
-        <h1 class="text-3xl font-bold tracking-tight">Welcome to MakersBnB</h1>
-        <p class="mt-4 text-slate-600">This is the homepage.</p>
-        <a href="/listings" class="mt-6 inline-block rounded-md bg-slate-900 px-4 py-2 text-white no-underline transition-colors hover:bg-slate-700">View listings</a>
-    </section>
-</main>
+<section class="flex min-h-[70vh] w-full flex-col items-center justify-center bg-[url(/static/assets/beach.jpg)] bg-cover bg-center bg-no-repeat p-8 text-center">
+    <h1 class="text-3xl font-bold tracking-tight text-white">Welcome to MakersBnB</h1>
+    <p class="mt-4 text-white">This is the homepage.</p>
+    <a href="/listings" class="mt-6 inline-block rounded-md bg-white px-4 py-2 text-slate-900 no-underline transition-colors hover:bg-slate-300">View listings</a>
+</section>
 {% endblock %}
