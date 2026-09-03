@@ -140,7 +140,7 @@ def create_listing(user_id):
         return redirect("/listings")
     except Exception as e:
         flash(f"Failed to create listing: {str(e)}")
-        return redirect(f"/users/{user_id}/listings/new")
+        return redirect(f"/users/{user_id}/listings")
 
 @app.route("/bookings", methods=["POST"])
 def create_booking():
