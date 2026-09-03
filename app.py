@@ -131,6 +131,10 @@ def create_listing(user_id):
 
 @app.route("/bookings", methods=["POST"])
 def create_booking():
+    if "user_id" not in session:
+        flash("You must be logged in to request a booking")
+        return redirect("/sign_in")
+
     listing_id = request.form["listing_id"]
     start_date = request.form["start_date"]
     end_date = request.form["end_date"]
@@ -140,13 +144,13 @@ def create_booking():
 
     if not repository.is_available(listing_id, start_date, end_date):
         flash("Those dates are already booked.", "error")
-        return redirect(f"/single_listing/{listing_id}")
+        return redirect(f"/listings/{listing_id}")
 
-    booking = Booking(start_date, end_date, "PENDING", listing_id)
+    booking = Booking(start_date, end_date, "PENDING", listing_id, session["user_id"])
     repository.create(booking)
 
     flash("Your booking request has been submitted.")
-    return redirect(f"/single_listing/{listing_id}")
+    return redirect(f"/listings/{listing_id}")
 
 
 @app.route("/users/<int:user_id>/bookings", methods={"GET"})
