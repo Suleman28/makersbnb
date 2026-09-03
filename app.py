@@ -1,4 +1,6 @@
 import os
+import re
+from datetime import datetime
 from flask import Flask, request, render_template, redirect, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from lib.database_connection import get_flask_database_connection
@@ -14,6 +16,23 @@ from lib.booking_repository import BookingRepository
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
+
+
+# dates_available is stored as free text (e.g. "2027-01-01, 2028-12-12" or
+# "2027-01-01 to 2028-12-12"), so this tolerates both known separators and
+# falls back to the raw value if it can't be parsed.
+@app.template_filter("friendly_dates")
+def friendly_dates(raw):
+    if not raw:
+        return raw
+    parts = re.split(r"\s*(?:,|\bto\b)\s*", raw.strip())
+    if len(parts) != 2:
+        return raw
+    try:
+        start, end = (datetime.strptime(p, "%Y-%m-%d") for p in parts)
+    except ValueError:
+        return raw
+    return f"{start.day} {start.strftime('%b %Y')} – {end.day} {end.strftime('%b %Y')}"
 
 
 @app.route("/", methods=["GET"])
@@ -96,7 +115,8 @@ def single_listing(listing_id):
     connection = get_flask_database_connection(app)
     repository = ListingRepository(connection)
     listing = repository.find(listing_id)
-    return render_template("single_listing.html", listing=listing)
+    host = UserRepository(connection).find(listing.user_id)
+    return render_template("single_listing.html", listing=listing, host=host)
 
 @app.route("/users/<int:user_id>/listings", methods=["GET"])
 def get_host_listings(user_id):
@@ -143,7 +163,7 @@ def create_listing(user_id):
         return redirect("/listings")
     except Exception as e:
         flash(f"Failed to create listing: {str(e)}")
-        return redirect(f"/users/{user_id}/listings/new")
+        return redirect(f"/users/{user_id}/listings")
 
 @app.route("/bookings", methods=["POST"])
 def create_booking():
