@@ -82,7 +82,7 @@ def destroy_session():
 
 
 @app.route("/listings", methods=["GET"])
-def get_guest_listings():
+def get_listings():
     connection = get_flask_database_connection(app)
     repository = ListingRepository(connection)
     listings = repository.all()
