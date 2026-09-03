@@ -53,3 +53,20 @@ class ListingRepository:
     def delete(self, listing_id):
         self._connection.execute("DELETE FROM listings WHERE id = %s", [listing_id])
         return None
+
+    def select_for_fe(self, num):
+        rows = self._connection.execute("SELECT * FROM listings ORDER BY price DESC LIMIT %s", [num])
+        listings = []
+        for row in rows:
+            item = Listing(
+                row["name"],
+                row["dates_available"],
+                row["price"],
+                row["image_url"],
+                row["description"],
+                row["user_id"],
+                row["id"]
+            )
+            listings.append(item)
+        return listings
+
