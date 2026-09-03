@@ -14,3 +14,11 @@ def test_get_index(page, test_web_address):
 
     # We assert that it has the text "This is the homepage."
     expect(p_tag).to_have_text("This is the homepage.")
+
+def test_get_travel_bookings(page, test_web_address):
+
+    page.goto(f"http://{test_web_address}/users/1/bookings")
+
+    title = page.locator("h1")
+
+    expect(title).to_have_text("Your Bookings")
