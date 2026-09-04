@@ -81,6 +81,6 @@ def test_find_all_listings_booked():
     bookings = repo.find_all_listings(1)
 
     assert bookings == [
-        Booking(date(2027, 1, 5), date(2027, 1, 10), "PENDING", 1, 1),
-        Booking(date(2027, 1, 11), date(2027, 1, 13), "BOOKED", 1, 3)
+        Booking(date(2027, 1, 5), date(2027, 1, 10), "PENDING", 1, 2, 1),
+        Booking(date(2027, 1, 11), date(2027, 1, 13), "BOOKED", 1, 4, 3)
     ]

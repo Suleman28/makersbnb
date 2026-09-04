@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-<main class="flex min-h-[calc(100vh-69px)] items-center justify-center px-4 py-12">
+<main class="flex flex-1 items-center justify-center px-4 py-12">
     <form method="POST" action="/users/{{session.user_id}}/listings/new" id="new-listing-form" class="w-full max-w-md rounded-xl bg-white p-7 shadow-lg shadow-slate-900/5 ring-1 ring-slate-900/5">
         <h1 class="text-xl font-bold tracking-tight text-slate-900">Create a listing</h1>
         <p class="mt-1 text-sm text-slate-500">Tell guests about your space.</p>

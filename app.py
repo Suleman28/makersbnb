@@ -73,6 +73,20 @@ def internal_server_error(error):
     return render_error(500, "Something went wrong", "Sorry, something broke on our end. Please try again.")
 
 
+# Everyone who has committed to this repo, per the GitHub contributors API for
+# Suleman28/makersbnb. Avatars come from github.com/<handle>.png, which redirects
+# to their current profile picture, so this stays up to date on its own.
+TEAM = [
+    {"name": "Suleman Shah", "github": "Suleman28"},
+    {"name": "Charlie Sampson", "github": "sxmz03"},
+    {"name": "Emily Blackford", "github": "EmilyBlackford"},
+    {"name": "Erica Calogero", "github": "ecalogero"},
+    {"name": "Kamilya Dosbayeva", "github": "kamilearner"},
+    {"name": "Rochelle Ayad", "github": "ChelleRB"},
+    {"name": "Ryan Osmaston", "github": "Ryasmaston"},
+]
+
+
 @app.route("/", methods=["GET"])
 @app.route("/index", methods=["GET"])
 def get_index():
@@ -80,6 +94,11 @@ def get_index():
     repository = ListingRepository(connection)
     listings = repository.select_for_fe(3)
     return render_template("index.html", listings=listings)
+
+
+@app.route("/about", methods=["GET"])
+def get_about():
+    return render_template("about.html", team=TEAM)
 
 
 @app.route("/sign_up", methods=["GET"])
@@ -130,6 +149,11 @@ def create_session():
     return redirect('/')
   else:
     return render_template('signin.html', error="invalid email or password, please try again."), 401
+
+@app.context_processor
+def inject_current_year():
+    return {'current_year': datetime.now().year}
+
 
 @app.context_processor
 def inject_current_user():

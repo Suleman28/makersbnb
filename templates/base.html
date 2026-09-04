@@ -8,10 +8,14 @@
         {% block head %}{% endblock %}
         <title>{% block title %}MakersBnB{% endblock %}</title>
     </head>
-    <body class="min-h-screen bg-slate-50 text-slate-900">
+    <body class="flex min-h-screen flex-col bg-slate-50 text-slate-900">
         {% include "components/navbar.html" %}
         {% include "components/flash_messages.html" %}
 
-        {% block content %}{% endblock %}
+        <div class="flex flex-1 flex-col">
+            {% block content %}{% endblock %}
+        </div>
+
+        {% include "components/footer.html" %}
     </body>
 </html>
