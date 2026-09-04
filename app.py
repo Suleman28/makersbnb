@@ -1,7 +1,7 @@
 import os
 import re
 from datetime import datetime
-from flask import Flask, request, render_template, redirect, flash, session
+from flask import Flask, request, render_template, redirect, flash, session, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from lib.database_connection import get_flask_database_connection
 from lib.booking import Booking
@@ -47,6 +47,30 @@ def friendly_date(value):
         except ValueError:
             return value
     return f"{value.day} {value.strftime('%b %Y')}"
+
+
+def render_error(code, heading, message):
+    return render_template("error.html", code=code, heading=heading, message=message), code
+
+
+@app.errorhandler(403)
+def forbidden(error):
+    return render_error(403, "Forbidden", "You don't have permission to view this page.")
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_error(404, "Page not found", "Sorry, we couldn't find the page you're looking for.")
+
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return render_error(405, "Method not allowed", "That action isn't available on this page.")
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_error(500, "Something went wrong", "Sorry, something broke on our end. Please try again.")
 
 
 @app.route("/", methods=["GET"])
@@ -128,7 +152,12 @@ def get_listings():
 def single_listing(listing_id):
     connection = get_flask_database_connection(app)
     repository = ListingRepository(connection)
-    listing = repository.find(listing_id)
+    # find() indexes into the query result, so a missing listing raises
+    # IndexError - turn that into a 404 rather than a 500.
+    try:
+        listing = repository.find(listing_id)
+    except IndexError:
+        abort(404)
     host = UserRepository(connection).find(listing.user_id)
     return render_template("single_listing.html", listing=listing, host=host)
 
