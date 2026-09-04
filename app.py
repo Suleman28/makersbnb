@@ -169,11 +169,16 @@ def single_listing(listing_id):
         }
         for booking in booked_bookings
     ]
+    parts = [p.strip() for p in (listing.dates_available or "").split(",") if p.strip()]
+    available_from = parts[0] if len(parts) > 0 else None
+    available_to = parts[1] if len(parts) > 1 else None
     return render_template(
         "single_listing.html",
         listing=listing,
         host=host,
         booked_ranges=booked_ranges,
+        available_from=available_from,
+        available_to=available_to,
     )
 
 @app.route("/users/<int:user_id>/listings", methods=["GET"])
