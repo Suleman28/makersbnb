@@ -8,8 +8,6 @@ from lib.listing_repository import ListingRepository
 from lib.listing import Listing
 from lib.user import User
 from lib.user_repository import UserRepository
-from lib.booking import Booking
-from lib.booking_repository import BookingRepository
 
 
 app = Flask(__name__)
@@ -25,6 +23,7 @@ def get_index():
 @app.route("/sign_up", methods=["GET"])
 def get_signup():
     return render_template("signup.html")
+
 
 @app.route("/sign_up", methods=["POST"])
 def create_account():
@@ -69,16 +68,17 @@ def create_session():
 
 @app.context_processor
 def inject_current_user():
-  if 'user_id' not in session:
-    return {}
-  connection = get_flask_database_connection(app)
-  return {'current_user': UserRepository(connection).find(session['user_id'])}
+    if 'user_id' not in session:
+        return {}
+    connection = get_flask_database_connection(app)
+    return {'current_user': UserRepository(connection).find(session['user_id'])}
+
 
 @app.route('/sign_out', methods=['POST'])
 def destroy_session():
-  session.pop('user_id', None)
-  flash('Successfully signed out.')
-  return redirect('/')
+    session.pop('user_id', None)
+    flash('Successfully signed out.')
+    return redirect('/')
 
 
 @app.route("/listings", methods=["GET"])
@@ -222,10 +222,14 @@ def update_booking_status(listing_id, booking_id, status):
     booking = booking_repository.find(booking_id)
     if booking.listing_id != listing_id:
         flash("Booking not found for this listing")
-        return redirect(f"/users/{session['user_id']}/listings/{listing_id}/bookings") #should work hopefully!
-    booking_repository.update_status_managed_by_host(booking_id, status)
+        return redirect(
+            f"/users/{session['user_id']}/listings/{listing_id}/bookings"
+        )  # should work hopefully!
+    booking_repository.update_booking_status_managed_by_host(booking_id, status)
     flash(f"Booking {status.lower()}")
-    return redirect(f"/users/{session['user_id']}/listings/{listing_id}/bookings")
+    return redirect(
+        f"/users/{session['user_id']}/listings/{listing_id}/bookings")
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
