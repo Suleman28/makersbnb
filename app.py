@@ -10,8 +10,6 @@ from lib.listing_repository import ListingRepository
 from lib.listing import Listing
 from lib.user import User
 from lib.user_repository import UserRepository
-from lib.booking import Booking
-from lib.booking_repository import BookingRepository
 
 
 app = Flask(__name__)
@@ -86,6 +84,7 @@ def get_index():
 def get_signup():
     return render_template("signup.html")
 
+
 @app.route("/sign_up", methods=["POST"])
 def create_account():
     name = request.form["name"]
@@ -129,16 +128,17 @@ def create_session():
 
 @app.context_processor
 def inject_current_user():
-  if 'user_id' not in session:
-    return {}
-  connection = get_flask_database_connection(app)
-  return {'current_user': UserRepository(connection).find(session['user_id'])}
+    if 'user_id' not in session:
+        return {}
+    connection = get_flask_database_connection(app)
+    return {'current_user': UserRepository(connection).find(session['user_id'])}
+
 
 @app.route('/sign_out', methods=['POST'])
 def destroy_session():
-  session.pop('user_id', None)
-  flash('Successfully signed out.')
-  return redirect('/')
+    session.pop('user_id', None)
+    flash('Successfully signed out.')
+    return redirect('/')
 
 
 @app.route("/listings", methods=["GET"])
@@ -283,6 +283,22 @@ def get_travel_bookings(user_id):
     return render_template("user_bookings.html", booking_pairs=list(zip(bookings, listings)))
 
 
+@app.route("/users/<int:user_id>/listings/<int:listing_id>/bookings", methods=["GET"])
+def get_listing_bookings(user_id, listing_id):
+    if "user_id" not in session:
+        flash("You must be logged in to view booking requests")
+        return redirect("/")
+    connection = get_flask_database_connection(app)
+    listing_repository = ListingRepository(connection)
+    listing = listing_repository.find(listing_id)
+    if listing.user_id != session["user_id"]:
+        flash("You can only view booking requests for your own listings")
+        return redirect("/")
+    booking_repository = BookingRepository(connection)
+    bookings = booking_repository.find_all_listings(listing_id)
+    return render_template("host_bookings.html", listing=listing, bookings=bookings)
+
+
 @app.route("/listings/<int:listing_id>/bookings/<int:booking_id>", methods=["GET"])
 def check_on_single_booking(listing_id, booking_id):
     if "user_id" not in session:
@@ -321,12 +337,12 @@ def update_booking_status(listing_id, booking_id, status):
         return redirect("/")
     booking_repository = BookingRepository(connection)
     booking = booking_repository.find(booking_id)
-    booking_repository.update_booking_status_managed_by_host(booking_id, status)
     if booking.listing_id != listing_id:
         flash("Booking not found for this listing")
-        return redirect(f"/users/{session['user_id']}/listings/{listing_id}") #should work hopefully!
+        return redirect(f"/users/{session['user_id']}/listings/{listing_id}/bookings")
+    booking_repository.update_booking_status_managed_by_host(booking_id, status)
     flash(f"Booking {status.lower()}")
-    return redirect(f"/users/{session['user_id']}/listings/{listing_id}")
+    return redirect(f"/users/{session['user_id']}/listings/{listing_id}/bookings")
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
