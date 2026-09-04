@@ -158,8 +158,23 @@ def single_listing(listing_id):
         listing = repository.find(listing_id)
     except IndexError:
         abort(404)
-    host = UserRepository(connection).find(listing.user_id)
-    return render_template("single_listing.html", listing=listing, host=host)
+    user_repository = UserRepository(connection)
+    host = user_repository.find(listing.user_id)
+    booking_repository = BookingRepository(connection)
+    booked_bookings = booking_repository.find_booked_by_listing(listing_id)
+    booked_ranges = [
+        {
+            "from": booking.start_date.isoformat() if hasattr(booking.start_date, "isoformat") else str(booking.start_date),
+            "to": booking.end_date.isoformat() if hasattr(booking.end_date, "isoformat") else str(booking.end_date),
+        }
+        for booking in booked_bookings
+    ]
+    return render_template(
+        "single_listing.html",
+        listing=listing,
+        host=host,
+        booked_ranges=booked_ranges,
+    )
 
 @app.route("/users/<int:user_id>/listings", methods=["GET"])
 def get_host_listings(user_id):
