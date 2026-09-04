@@ -103,22 +103,18 @@
     function setRequirementMet(li, met) {
         li.classList.toggle("met", met);
     }
-
     function checkPassword() {
         const value = passwordInput.value;
         const hasLength = value.length >= 8;
         const hasSpecial = [...value].some(char => SPECIAL_CHARACTERS.includes(char));
-
         setRequirementMet(reqLength, hasLength);
         setRequirementMet(reqSpecial, hasSpecial);
-
         return hasLength && hasSpecial;
     }
 
     function checkMatch() {
         const matches = passwordConfirmationInput.value.length > 0
             && passwordInput.value === passwordConfirmationInput.value;
-
         setRequirementMet(reqMatch, matches);
         return matches;
     }
@@ -128,7 +124,6 @@
         checkMatch();
     });
     passwordConfirmationInput.addEventListener("input", checkMatch);
-
     checkPassword();
     checkMatch();
 </script>
