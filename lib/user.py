@@ -1,7 +1,9 @@
 class User:
-    def __init__(self, name, email, password, id =None):
+    SPECIAL_CHARACTERS = set("!@#$%^&*()-_=+[]{}|;:'\",.<>/?`~\\")
+
+    def __init__(self, name, email, password, id=None):
         self.id = id
-        self.name= name
+        self.name = name
         self.email = email
         self.password = password
 
@@ -10,3 +12,10 @@ class User:
 
     def __repr__(self):
         return f"The User's details: ({self.name}, {self.email})"
+
+    @staticmethod
+    def validate_password(password):
+        if len(password) < 8:
+            raise ValueError("Password must be at least 8 characters long.")
+        if not any(char in User.SPECIAL_CHARACTERS for char in password):
+            raise ValueError("Password must contain at least one special character.")

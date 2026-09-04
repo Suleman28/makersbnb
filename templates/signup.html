@@ -3,37 +3,128 @@
 {% block title %}Sign Up | MakersBnB{% endblock %}
 
 {% block content %}
-<main class="flex items-center justify-center px-4 py-12">
-    <form method="POST" action="/sign_up" class="flex w-full max-w-sm flex-col gap-4 rounded-lg bg-white p-8 shadow-sm">
-        <h1 class="mb-2 text-xl font-bold text-slate-900">Sign up</h1>
+<style>
+    .requirement-item {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        color: #e11d48;
+    }
+    .requirement-item.met {
+        color: #059669;
+    }
+    .requirement-icon {
+        display: inline-flex;
+        height: 0.875rem;
+        width: 0.875rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        border: 1px solid #e11d48;
+        background-color: #e11d48;
+        color: #fff;
+        font-size: 9px;
+        line-height: 1;
+    }
+    .requirement-item.met .requirement-icon {
+        border-color: #059669;
+        background-color: #059669;
+    }
+</style>
 
+<main class="flex min-h-[calc(100vh-69px)] items-center justify-center px-4 py-12">
+    <form method="POST" action="/sign_up" class="w-full max-w-sm rounded-xl bg-white p-7 shadow-lg shadow-slate-900/5 ring-1 ring-slate-900/5">
+        <img src="/static/assets/icon.png" alt="MakersBnB" class="mb-5 h-10 w-10">
+        <h1 class="text-xl font-bold tracking-tight text-slate-900">Create your account</h1>
+        <p class="mt-1 text-sm text-slate-500">Book stays or host your own.</p>
         {% if error %}
-          <p class="text-sm text-red-600">{{ error }}</p>
+          <p class="mt-4 rounded-md bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700">{{ error }}</p>
         {% endif %}
+        <div class="mt-6 flex flex-col gap-4">
+            <div class="flex flex-col gap-1.5">
+                <label for="name" class="text-sm font-medium text-slate-700">Name</label>
+                <input type="text" name="name" id="name" autocomplete="name" required
+                    class="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10">
+            </div>
+            <div class="flex flex-col gap-1.5">
+                <label for="email" class="text-sm font-medium text-slate-700">Email</label>
+                <input type="email" name="email" id="email" autocomplete="email" required
+                    class="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10">
+            </div>
+            <div class="flex flex-col gap-1.5">
+                <label for="password" class="text-sm font-medium text-slate-700">Password</label>
+                <input type="password" name="password" id="password" autocomplete="new-password" required
+                    aria-describedby="password-requirements"
+                    class="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10">
 
-        <div class="flex flex-col gap-1">
-          <label for="name" class="text-sm font-medium text-slate-700">Name</label>
-          <input type="text" name="name" id="name" required class="rounded-md border border-slate-300 px-3 py-2">
+                <ul id="password-requirements" class="mt-1.5 flex flex-col gap-1 text-xs" style="list-style: none; padding-left: 0; margin: 0;">
+                    <li id="req-length" class="requirement-item">
+                        <span class="requirement-icon">&#10003;</span>
+                        At least 8 characters
+                    </li>
+                    <li id="req-special" class="requirement-item">
+                        <span class="requirement-icon">&#10003;</span>
+                        At least one special character (e.g. ! @ # $ %)
+                    </li>
+                </ul>
+            </div>
+            <div class="flex flex-col gap-1.5">
+                <label for="password_confirmation" class="text-sm font-medium text-slate-700">Confirm password</label>
+                <input type="password" name="password_confirmation" id="password_confirmation" autocomplete="new-password" required
+                    aria-describedby="password-match-requirement"
+                    class="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10">
+
+                <ul id="password-match-requirement" class="mt-1.5 flex flex-col gap-1 text-xs" style="list-style: none; padding-left: 0; margin: 0;">
+                    <li id="req-match" class="requirement-item">
+                        <span class="requirement-icon">&#10003;</span>
+                        Passwords match
+                    </li>
+                </ul>
+            </div>
+            <button type="submit" id="submit-btn"
+                class="mt-1 w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/20 disabled:cursor-not-allowed disabled:bg-slate-300">Sign up</button>
         </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="email" class="text-sm font-medium text-slate-700">Email</label>
-          <input type="email" name="email" id="email" required class="rounded-md border border-slate-300 px-3 py-2">
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="password" class="text-sm font-medium text-slate-700">Password</label>
-          <input type="password" name="password" id="password" required class="rounded-md border border-slate-300 px-3 py-2">
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="password_confirmation" class="text-sm font-medium text-slate-700">Password confirmation</label>
-          <input type="password" name="password_confirmation" id="password_confirmation" required class="rounded-md border border-slate-300 px-3 py-2">
-        </div>
-
-        <button type="submit" class="mt-2 rounded-md bg-slate-900 px-4 py-2 text-white transition-colors hover:bg-slate-700">Sign up</button>
-
-        <p class="text-sm text-slate-600 text-center">Already have an account? <a href="/sign_in" class="text-slate-900 font-medium hover:underline">Sign in</a></p>
+        <p class="mt-5 text-center text-sm text-slate-500">
+            Already have an account?
+            <a href="/sign_in" class="font-medium text-slate-900 no-underline hover:underline">Sign in</a>
+        </p>
     </form>
 </main>
+
+<script>
+    const SPECIAL_CHARACTERS = "!@#$%^&*()-_=+[]{}|;:'\",.<>/?`~\\";
+    const passwordInput = document.getElementById("password");
+    const passwordConfirmationInput = document.getElementById("password_confirmation");
+    const submitBtn = document.getElementById("submit-btn");
+    const reqLength = document.getElementById("req-length");
+    const reqSpecial = document.getElementById("req-special");
+    const reqMatch = document.getElementById("req-match");
+    function setRequirementMet(li, met) {
+        li.classList.toggle("met", met);
+    }
+    function checkPassword() {
+        const value = passwordInput.value;
+        const hasLength = value.length >= 8;
+        const hasSpecial = [...value].some(char => SPECIAL_CHARACTERS.includes(char));
+        setRequirementMet(reqLength, hasLength);
+        setRequirementMet(reqSpecial, hasSpecial);
+        return hasLength && hasSpecial;
+    }
+
+    function checkMatch() {
+        const matches = passwordConfirmationInput.value.length > 0
+            && passwordInput.value === passwordConfirmationInput.value;
+        setRequirementMet(reqMatch, matches);
+        return matches;
+    }
+
+    passwordInput.addEventListener("input", () => {
+        checkPassword();
+        checkMatch();
+    });
+    passwordConfirmationInput.addEventListener("input", checkMatch);
+    checkPassword();
+    checkMatch();
+</script>
 {% endblock %}

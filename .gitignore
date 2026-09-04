@@ -6,3 +6,7 @@ __pycache__
 node_modules
 *venv*
 static/style.css
+.DS_Store
+static/.DS_Store
+pnpm-lock.yaml
+CLAUDE.md
