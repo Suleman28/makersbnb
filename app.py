@@ -38,7 +38,10 @@ def friendly_dates(raw):
 @app.route("/", methods=["GET"])
 @app.route("/index", methods=["GET"])
 def get_index():
-    return render_template("index.html")
+    connection = get_flask_database_connection(app)
+    repository = ListingRepository(connection)
+    listings = repository.select_for_fe(3)
+    return render_template("index.html", listings=listings)
 
 
 @app.route("/sign_up", methods=["GET"])

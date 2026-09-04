@@ -2,3 +2,11 @@
 
 @source "../../templates/**/*.html";
 @source "../../app.py";
+@layer utilities {
+  .bg-\[url\(\/static\/assets\/beach\.jpg\)\] {
+    background-image: url(/static/assets/beach.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
