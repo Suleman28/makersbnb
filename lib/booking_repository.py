@@ -1,4 +1,4 @@
-from lib.booking import Booking 
+from lib.booking import Booking
 
 class BookingRepository:
 
@@ -65,7 +65,7 @@ class BookingRepository:
             item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["id"])
             bookings.append(item)
         return bookings
-      
+
     def find_by_user(self, user_id):
         rows = self._connection.execute(
             'SELECT * from bookings WHERE user_id = %s', [user_id])
@@ -74,4 +74,17 @@ class BookingRepository:
             item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["user_id"], row["id"])
             bookings.append(item)
         return bookings
-        
+
+    def find_booked_by_listing(self, listing_id):
+        rows = self._connection.execute(
+            '''
+            SELECT * FROM bookings
+            WHERE listing_id = %s AND status = 'BOOKED'
+            ORDER BY start_date
+            ''',
+            [listing_id])
+        bookings = []
+        for row in rows:
+            item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["user_id"], row["id"])
+            bookings.append(item)
+        return bookings
