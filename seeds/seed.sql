@@ -19,7 +19,7 @@ CREATE TABLE listings (
     name VARCHAR(255) NOT NULL,
     dates_available TEXT,
     price DECIMAL NOT NULL,
-    image_url VARCHAR(255),
+    image_url VARCHAR(1026),
     description TEXT,
     user_id INTEGER NOT NULL,
     PRIMARY KEY(id),

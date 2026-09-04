@@ -43,7 +43,7 @@
 
     <div class="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-3">
         <div class="lg:col-span-2">
-            <div class="border-b border-slate-200 py-6">
+            <div class="border-b border-slate-200 py-6 mb-4">
                 <h2 class="text-xl font-semibold text-slate-900">All Bookings</h2>
             </div>
         </div>
@@ -54,7 +54,7 @@
             {% for booking in bookings %}
                 <article class="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
                     <div>
-                        <p class="text-sm text-slate-500">{{ booking.start_date }} &rarr; {{ booking.end_date }}</p>
+                        <p class="text-sm text-slate-500">{{ booking.start_date|friendly_date }} &rarr; {{ booking.end_date|friendly_date }}</p>
                     </div>
 
                     <div class="flex items-center gap-3">
