@@ -194,6 +194,21 @@ def get_host_listings(user_id):
     listings = [l for l in repository.all() if int(l.user_id) == int(user_id)]
     return render_template("host_listings.html", listings=listings)
 
+@app.route("/users/<int:user_id>/listings/<int:listing_id>", methods=["GET"])
+def get_host_listing(user_id, listing_id):
+    if "user_id" not in session:
+        flash("You must be logged in to view your listing")
+        return redirect("/")
+    if session["user_id"] != user_id:
+        flash("You can only view your own listing")
+        return redirect("/")
+    connection = get_flask_database_connection(app)
+    listing_repository = ListingRepository(connection)
+    booking_repository = BookingRepository(connection)
+    listing = listing_repository.find(listing_id)
+    bookings = booking_repository.find_by_user(session['user_id'])
+    return render_template("host_listing.html", listing=listing, bookings=bookings)
+
 @app.route("/users/<int:user_id>/listings/new", methods=["GET"])
 def new_listing(user_id):
     if "user_id" not in session:
@@ -306,12 +321,12 @@ def update_booking_status(listing_id, booking_id, status):
         return redirect("/")
     booking_repository = BookingRepository(connection)
     booking = booking_repository.find(booking_id)
+    booking_repository.update_booking_status_managed_by_host(booking_id, status)
     if booking.listing_id != listing_id:
         flash("Booking not found for this listing")
-        return redirect(f"/users/{session['user_id']}/listings/{listing_id}/bookings") #should work hopefully!
-    booking_repository.update_status_managed_by_host(booking_id, status)
+        return redirect(f"/users/{session['user_id']}/listings/{listing_id}") #should work hopefully!
     flash(f"Booking {status.lower()}")
-    return redirect(f"/users/{session['user_id']}/listings/{listing_id}/bookings")
+    return redirect(f"/users/{session['user_id']}/listings/{listing_id}")
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
