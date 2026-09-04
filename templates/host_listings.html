@@ -4,58 +4,52 @@
 
 {% block content %}
 <main class="mx-auto max-w-6xl px-6 py-8">
-    <header class="mb-8 flex items-center justify-between">
+    <header class="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold tracking-tight">Your listings</h1>
             <p class="mt-2 text-slate-600">Manage the listings you've created.</p>
         </div>
-        <div>
-            <a href="/users/{{ current_user.id }}/listings/new"
-                class="inline-block rounded-md bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">Create
-                new listing</a>
-        </div>
+        <a href="/users/{{ current_user.id }}/listings/new"
+            class="inline-block rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white no-underline transition-colors hover:bg-slate-800">Create new listing</a>
     </header>
 
     {% if listings %}
-    <section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {% for listing in listings %}
-        <article
-            class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-            {% if listing.image_url %}
-            <img class="h-48 w-full bg-slate-200 object-cover" src="{{ listing.image_url }}" alt="{{ listing.name }}">
-            {% endif %}
+        <section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for listing in listings %}
+                <article class="flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                    <a href="/listings/{{ listing.id }}" class="block">
+                        {% if listing.image_url %}
+                            <img
+                                class="aspect-[4/3] w-full bg-slate-200 object-cover"
+                                src="{{ listing.image_url }}"
+                                alt="{{ listing.name }}"
+                            >
+                        {% else %}
+                            <div class="aspect-[4/3] w-full bg-slate-200"></div>
+                        {% endif %}
+                    </a>
 
-            <div class="space-y-3 p-5">
-                <h2 class="text-xl font-semibold">{{ listing.name }}</h2>
-                <p class="text-sm leading-6 text-slate-700">{{ listing.description }}</p>
+                    <div class="flex flex-1 flex-col p-5">
+                        <h2 class="truncate text-lg font-bold text-slate-900">
+                            <a href="/listings/{{ listing.id }}" class="no-underline hover:underline">{{ listing.name }}</a>
+                        </h2>
 
-                <div class="border-t border-slate-100 pt-3">
-                    <p class="text-sm text-slate-500">Available: {{ listing.dates_available }}</p>
-                    <p class="mt-2 text-lg font-bold">£{{ listing.price }} <span
-                            class="text-sm font-normal text-slate-500">per night</span></p>
-                </div>
+                        <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{{ listing.description }}</p>
 
                 <div class="mt-3 flex gap-3">
-                    <a href="/listings/{{ listing.id }}" class="text-sky-600 hover:underline">View</a>
+                    <a href="/users/{{ current_user.id }}/listings/{{ listing.id }}" class="text-sky-600 hover:underline">View Listing</a>
                     <!-- Optional: add edit/delete routes if implemented -->
-                    <a href="/users/{{ current_user.id }}/listings/{{ listing.id }}/edit"
-                        class="text-slate-600 hover:underline">Edit</a>
-                    <form action="/users/{{ current_user.id }}/listings/{{ listing.id }}/delete" method="post"
-                        class="inline">
-                        <button type="submit" class="text-red-600 hover:underline">Delete</button>
-                    </form>
                 </div>
             </div>
         </article>
         {% endfor %}
     </section>
     {% else %}
-    <div class="rounded-lg border border-slate-200 bg-white p-6 text-center shadow-sm">
-        <p class="text-slate-600 mb-4">You haven't created any listings yet.</p>
-        <a href="/users/{{ current_user.id }}/listings/new"
-            class="inline-block rounded-md bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">Create
-            your first listing</a>
-    </div>
+        <div class="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-900/5">
+            <p class="text-slate-600">You haven't created any listings yet.</p>
+            <a href="/users/{{ current_user.id }}/listings/new"
+                class="mt-4 inline-block rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white no-underline transition-colors hover:bg-slate-800">Create your first listing</a>
+        </div>
     {% endif %}
 </main>
 {% endblock %}
