@@ -29,8 +29,8 @@ class BookingRepository:
             SELECT id FROM bookings
             WHERE listing_id = %s
               AND status = 'BOOKED'
-              AND start_date < %s
-              AND end_date > %s
+              AND start_date <= %s
+              AND end_date >= %s
             LIMIT 1
             ''',
             [listing_id, end_date, start_date])
