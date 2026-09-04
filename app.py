@@ -235,7 +235,10 @@ def get_host_listing(user_id, listing_id):
     listing_repository = ListingRepository(connection)
     booking_repository = BookingRepository(connection)
     listing = listing_repository.find(listing_id)
-    bookings = booking_repository.find_by_user(session['user_id'])
+    if listing.user_id != session["user_id"]:
+        flash("You can only view your own listing")
+        return redirect("/")
+    bookings = booking_repository.find_all_listings(listing_id)
     return render_template("host_listing.html", listing=listing, bookings=bookings)
 
 @app.route("/users/<int:user_id>/listings/new", methods=["GET"])
