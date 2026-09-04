@@ -35,6 +35,20 @@ def friendly_dates(raw):
     return f"{start.day} {start.strftime('%b %Y')} – {end.day} {end.strftime('%b %Y')}"
 
 
+# Booking start/end dates come from DATE columns as date objects, but tolerate
+# an ISO string too. Falls back to the raw value if it can't be parsed.
+@app.template_filter("friendly_date")
+def friendly_date(value):
+    if not value:
+        return value
+    if isinstance(value, str):
+        try:
+            value = datetime.strptime(value, "%Y-%m-%d").date()
+        except ValueError:
+            return value
+    return f"{value.day} {value.strftime('%b %Y')}"
+
+
 @app.route("/", methods=["GET"])
 @app.route("/index", methods=["GET"])
 def get_index():
