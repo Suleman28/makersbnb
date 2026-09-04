@@ -20,6 +20,7 @@
     --color-emerald-100: oklch(95% 0.052 163.051);
     --color-emerald-700: oklch(50.8% 0.118 165.612);
     --color-emerald-800: oklch(43.2% 0.095 166.913);
+    --color-sky-600: oklch(58.8% 0.158 241.966);
     --color-rose-50: oklch(96.9% 0.015 12.422);
     --color-rose-100: oklch(94.1% 0.03 12.58);
     --color-rose-500: oklch(64.5% 0.246 16.439);
@@ -819,6 +820,9 @@
   }
   .text-rose-800 {
     color: var(--color-rose-800);
+  }
+  .text-sky-600 {
+    color: var(--color-sky-600);
   }
   .text-slate-400 {
     color: var(--color-slate-400);
