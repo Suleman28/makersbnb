@@ -9,7 +9,9 @@ from lib.booking_repository import BookingRepository
 from lib.listing_repository import ListingRepository
 from lib.listing import Listing
 from lib.user import User
-from lib.user_repository import UserRepository
+from lib.user_repository import UserRepository, EmailAlreadyRegisteredError
+from lib.booking import Booking
+from lib.booking_repository import BookingRepository
 
 
 app = Flask(__name__)
@@ -91,17 +93,20 @@ def create_account():
     email = request.form["email"]
     password = request.form["password"]
     password_confirmation = request.form["password_confirmation"]
-
     if password != password_confirmation:
         return render_template("signup.html", error="Passwords do not match"), 400
-
+    try:
+        User.validate_password(password)
+    except ValueError as e:
+        return render_template("signup.html", error=str(e)), 400
     connection = get_flask_database_connection(app)
     repository = UserRepository(connection)
-
     hashed_password = generate_password_hash(password)
     user = User(name, email, hashed_password)
-    user_id = repository.create(user)
-
+    try:
+        user_id = repository.create(user)
+    except EmailAlreadyRegisteredError:
+        return render_template("signup.html", error="An account with that email already exists."), 400
     session['user_id'] = user_id
     flash("Signed up successfully!")
     return redirect("/")

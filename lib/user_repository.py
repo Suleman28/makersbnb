@@ -1,5 +1,8 @@
 from lib.user import User
 
+class EmailAlreadyRegisteredError(Exception):
+    pass
+
 class UserRepository:
 
     # We initialise with a database connection
@@ -33,12 +36,27 @@ class UserRepository:
     # Create a new user
     # Do you want to get its id back? Look into RETURNING id;
     def create(self, user):
-        result = self._connection.execute('INSERT INTO users (name, email, password) VALUES (%s, %s, %s) RETURNING id', [
-                                 user.name, user.email, user.password])
+        try:
+            result = self._connection.execute(
+                'INSERT INTO users (name, email, password) VALUES (%s, %s, %s) RETURNING id',
+                [user.name, user.email, user.password])
+        except Exception as e:
+            if self._is_unique_violation(e):
+                raise EmailAlreadyRegisteredError(
+                    f"Email '{user.email}' is already registered.") from e
+            raise
         return result[0]['id']
+
 
     # Delete a user by their id
     def delete(self, user_id):
         self._connection.execute(
             'DELETE FROM users WHERE id = %s', [user_id])
         return None
+
+    @staticmethod
+    def _is_unique_violation(error):
+        error_name = type(error).__name__
+        if error_name in ("UniqueViolation", "IntegrityError"):
+            return True
+        return "unique" in str(error).lower()
