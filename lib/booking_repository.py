@@ -62,7 +62,7 @@ class BookingRepository:
             'ORDER BY id', [listing_id])
         bookings = []
         for row in rows:
-            item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["id"])
+            item = Booking(row["start_date"], row["end_date"], row["status"], row["listing_id"], row["user_id"], row["id"])
             bookings.append(item)
         return bookings
 

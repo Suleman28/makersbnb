@@ -3,38 +3,72 @@
 {% block title %}Booking requests | MakersBnB{% endblock %}
 
 {% block content %}
-<main class="mx-auto max-w-6xl px-6 py-8">
-    <header class="mb-8">
-        <h1 class="text-3xl font-bold tracking-tight">Booking requests</h1>
-        <p class="mt-2 text-slate-600">Approve or deny requests for {{ listing.name }}.</p>
+<main class="mx-auto w-full max-w-6xl px-6 py-8">
+    <a class="text-sm text-slate-500 no-underline hover:text-slate-900" href="/users/{{ listing.user_id }}/listings">&larr; Back to your listings</a>
+
+    <header class="mt-4 mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight">Booking requests</h1>
+            <p class="mt-2 text-slate-600">Approve or deny requests for {{ listing.name }}.</p>
+        </div>
+        <a href="/listings/{{ listing.id }}"
+           class="rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-900 no-underline shadow-sm ring-1 ring-slate-900/5 transition-colors hover:bg-slate-50">View listing</a>
     </header>
 
     {% if bookings %}
+        {% set pending = bookings | selectattr("status", "equalto", "PENDING") | list %}
+        <p class="mb-4 text-sm text-slate-500">
+            {{ bookings | length }} request{{ '' if bookings | length == 1 else 's' }}
+            {%- if pending %} &middot; {{ pending | length }} awaiting your response{% endif %}
+        </p>
+
         <section class="space-y-4">
             {% for booking in bookings %}
-                <article class="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                    <div>
-                        <p class="text-sm text-slate-500">{{ booking.start_date }} &rarr; {{ booking.end_date }}</p>
-                    </div>
+                {% set nights = (booking.end_date - booking.start_date).days %}
+                <article class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5">
+                    <div class="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <p class="text-base font-semibold text-slate-900">
+                                {{ booking.start_date|friendly_date }} &rarr; {{ booking.end_date|friendly_date }}
+                            </p>
+                            <p class="mt-1 text-sm text-slate-500">
+                                {{ nights }} night{{ '' if nights == 1 else 's' }}
+                                &middot; &pound;{{ '%.2f'|format(listing.price * nights) }} total
+                            </p>
+                        </div>
 
-                    <div class="flex items-center gap-3">
                         {% if booking.status == "PENDING" %}
-                            <span class="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">Pending</span>
-                            <a href="/listings/{{ listing.id }}/bookings/{{ booking.id }}" class="rounded-md bg-slate-900 px-4 py-2 text-sm text-white no-underline transition-colors hover:bg-slate-700">Review request</a>
+                            <span class="shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Pending</span>
                         {% elif booking.status == "BOOKED" %}
-                            <span class="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800">Approved</span>
+                            <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">Approved</span>
                         {% elif booking.status == "DECLINED" %}
-                            <span class="rounded-full bg-rose-100 px-3 py-1 text-sm font-medium text-rose-800">Denied</span>
+                            <span class="shrink-0 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700">Denied</span>
                         {% else %}
-                            <span class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-800">{{ booking.status }}</span>
+                            <span class="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{{ booking.status }}</span>
                         {% endif %}
                     </div>
+
+                    {% if booking.status == "PENDING" %}
+                        <div class="mt-4 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4">
+                            <form method="POST" action="/listings/{{ listing.id }}/bookings/{{ booking.id }}/approve">
+                                <button type="submit"
+                                        class="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800">Approve</button>
+                            </form>
+                            <form method="POST" action="/listings/{{ listing.id }}/bookings/{{ booking.id }}/deny">
+                                <button type="submit"
+                                        class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-rose-600 shadow-sm ring-1 ring-rose-200 transition-colors hover:bg-rose-50">Deny</button>
+                            </form>
+                            <a href="/listings/{{ listing.id }}/bookings/{{ booking.id }}"
+                               class="text-sm font-medium text-slate-600 no-underline hover:text-slate-900 hover:underline">Review request</a>
+                        </div>
+                    {% endif %}
                 </article>
             {% endfor %}
         </section>
     {% else %}
-        <div class="rounded-lg border border-slate-200 bg-white p-6 text-center shadow-sm">
+        <div class="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-900/5">
             <p class="text-slate-600">No booking requests yet.</p>
+            <p class="mt-1 text-sm text-slate-500">You'll see requests here when guests book {{ listing.name }}.</p>
         </div>
     {% endif %}
 </main>
