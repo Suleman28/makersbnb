@@ -1,7 +1,7 @@
 import os
 import re
 from datetime import datetime
-from flask import Flask, request, render_template, redirect, flash, session
+from flask import Flask, request, render_template, redirect, flash, session, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from lib.database_connection import get_flask_database_connection
 from lib.booking import Booking
@@ -33,6 +33,44 @@ def friendly_dates(raw):
     except ValueError:
         return raw
     return f"{start.day} {start.strftime('%b %Y')} – {end.day} {end.strftime('%b %Y')}"
+
+
+# Booking start/end dates come from DATE columns as date objects, but tolerate
+# an ISO string too. Falls back to the raw value if it can't be parsed.
+@app.template_filter("friendly_date")
+def friendly_date(value):
+    if not value:
+        return value
+    if isinstance(value, str):
+        try:
+            value = datetime.strptime(value, "%Y-%m-%d").date()
+        except ValueError:
+            return value
+    return f"{value.day} {value.strftime('%b %Y')}"
+
+
+def render_error(code, heading, message):
+    return render_template("error.html", code=code, heading=heading, message=message), code
+
+
+@app.errorhandler(403)
+def forbidden(error):
+    return render_error(403, "Forbidden", "You don't have permission to view this page.")
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_error(404, "Page not found", "Sorry, we couldn't find the page you're looking for.")
+
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return render_error(405, "Method not allowed", "That action isn't available on this page.")
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_error(500, "Something went wrong", "Sorry, something broke on our end. Please try again.")
 
 
 @app.route("/", methods=["GET"])
@@ -114,9 +152,34 @@ def get_listings():
 def single_listing(listing_id):
     connection = get_flask_database_connection(app)
     repository = ListingRepository(connection)
-    listing = repository.find(listing_id)
-    host = UserRepository(connection).find(listing.user_id)
-    return render_template("single_listing.html", listing=listing, host=host)
+    # find() indexes into the query result, so a missing listing raises
+    # IndexError - turn that into a 404 rather than a 500.
+    try:
+        listing = repository.find(listing_id)
+    except IndexError:
+        abort(404)
+    user_repository = UserRepository(connection)
+    host = user_repository.find(listing.user_id)
+    booking_repository = BookingRepository(connection)
+    booked_bookings = booking_repository.find_booked_by_listing(listing_id)
+    booked_ranges = [
+        {
+            "from": booking.start_date.isoformat() if hasattr(booking.start_date, "isoformat") else str(booking.start_date),
+            "to": booking.end_date.isoformat() if hasattr(booking.end_date, "isoformat") else str(booking.end_date),
+        }
+        for booking in booked_bookings
+    ]
+    parts = [p.strip() for p in (listing.dates_available or "").split(",") if p.strip()]
+    available_from = parts[0] if len(parts) > 0 else None
+    available_to = parts[1] if len(parts) > 1 else None
+    return render_template(
+        "single_listing.html",
+        listing=listing,
+        host=host,
+        booked_ranges=booked_ranges,
+        available_from=available_from,
+        available_to=available_to,
+    )
 
 @app.route("/users/<int:user_id>/listings", methods=["GET"])
 def get_host_listings(user_id):

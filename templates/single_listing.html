@@ -35,7 +35,7 @@
 
     {% if listing.image_url %}
         <img
-            class="mt-6 h-[450px] w-full rounded-lg bg-slate-200 object-cover"
+            class="mt-6 h-[450px] w-full rounded-xl bg-slate-200 object-cover"
             src="{{ listing.image_url }}"
             alt="{{ listing.name }}"
         >
@@ -59,7 +59,7 @@
         </div>
 
         <aside class="lg:col-span-1">
-            <div class="sticky top-20 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="sticky top-20 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                 <p class="text-2xl font-bold text-slate-900">£{{ listing.price }} <span class="text-sm font-normal text-slate-500">/ night</span></p>
                 <p class="mt-1 text-xs text-slate-500">Available: {{ listing.dates_available|friendly_dates }}</p>
 
@@ -93,7 +93,7 @@
                     </div>
 
                     <button
-                        class="mt-4 w-full rounded-md bg-rose-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-rose-600 disabled:cursor-not-allowed disabled:bg-slate-300"
+                        class="mt-4 w-full rounded-md bg-slate-900 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
                         type="submit"
                         id="book-btn"
                         disabled
@@ -116,16 +116,69 @@
     const nightsSubtotal = document.getElementById("nights-subtotal");
     const totalPrice = document.getElementById("total-price");
     const pricePerNight = {{ listing.price|tojson }};
+    const bookedRanges = {{ booked_ranges|tojson }};
+    const availableFrom = {{ available_from|tojson }};
+    const availableTo = {{ available_to|tojson }};
+
+    function parseYMD(s) {
+        if (!s) return null;
+        const [y, m, d] = s.split("-").map(Number);
+        return new Date(y, m - 1, d);
+    }
+
+    function toYMD(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const availFromDate = parseYMD(availableFrom);
+    const availToDate = parseYMD(availableTo);
+    const effectiveMinDate = (availFromDate && availFromDate > today) ? availFromDate : today;
+    const bookedIntervals = bookedRanges.map(r => ({
+        from: parseYMD(r.from),
+        to: parseYMD(r.to)
+    }));
+
+    function isDayBooked(date) {
+        const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        return bookedIntervals.some(b => d >= b.from && d <= b.to);
+    }
+
+    function overlapsBooked(start, end) {
+        return bookedIntervals.some(b => start <= b.to && end >= b.from);
+    }
+
+    function resetSelection(message) {
+        startDateInput.value = "";
+        endDateInput.value = "";
+        checkInDisplay.textContent = "Add date";
+        checkOutDisplay.textContent = "Add date";
+        priceBreakdown.classList.add("hidden");
+        bookButton.disabled = true;
+        if (message) alert(message);
+    }
 
     flatpickr("#date-range", {
         inline: true,
         mode: "range",
         dateFormat: "Y-m-d",
-        minDate: "today",
-        onChange: function(selectedDates) {
+        minDate: effectiveMinDate,
+        maxDate: availToDate || undefined,
+        disable: [isDayBooked],
+        onChange: function(selectedDates, dateStr, instance) {
             if (selectedDates.length === 2) {
                 const start = selectedDates[0];
                 const end = selectedDates[1];
+
+                if (overlapsBooked(start, end)) {
+                    instance.clear();
+                    resetSelection("Those dates overlap an existing booking. Please choose a different range.");
+                    return;
+                }
 
                 startDateInput.value = flatpickr.formatDate(start, "Y-m-d");
                 endDateInput.value = flatpickr.formatDate(end, "Y-m-d");
@@ -141,12 +194,7 @@
 
                 bookButton.disabled = false;
             } else {
-                startDateInput.value = "";
-                endDateInput.value = "";
-                checkInDisplay.textContent = "Add date";
-                checkOutDisplay.textContent = "Add date";
-                priceBreakdown.classList.add("hidden");
-                bookButton.disabled = true;
+                resetSelection();
             }
         }
     });

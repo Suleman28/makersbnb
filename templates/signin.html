@@ -3,28 +3,38 @@
 {% block title %}Sign In | MakersBnB{% endblock %}
 
 {% block content %}
-<main class="flex items-center justify-center px-4 py-12">
-    <form method="POST" action="/sign_in" class="flex w-full max-w-sm flex-col gap-4 rounded-lg bg-white p-8 shadow-sm">
-        <h1 class="text-xl font-bold text-slate-900">Welcome back</h1>
-        <p class="mb-2 text-sm font-normal text-slate-700">Sign in to your account</p>
+<main class="flex min-h-[calc(100vh-69px)] items-center justify-center px-4 py-12">
+    <form method="POST" action="/sign_in" class="w-full max-w-sm rounded-xl bg-white p-7 shadow-lg shadow-slate-900/5 ring-1 ring-slate-900/5">
+        <img src="/static/assets/icon.png" alt="MakersBnB" class="mb-5 h-10 w-10">
+
+        <h1 class="text-xl font-bold tracking-tight text-slate-900">Welcome back</h1>
+        <p class="mt-1 text-sm text-slate-500">Sign in to your account.</p>
 
         {% if error %}
-          <p class="text-sm text-red-600">{{ error }}</p>
+          <p class="mt-4 rounded-md bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700">{{ error }}</p>
         {% endif %}
 
-        <div class="flex flex-col gap-1">
-          <label for="email" class="text-sm font-medium text-slate-700">Email</label>
-          <input type="email" name="email" id="email" required class="rounded-md border border-slate-300 px-3 py-2">
+        <div class="mt-6 flex flex-col gap-4">
+            <div class="flex flex-col gap-1.5">
+                <label for="email" class="text-sm font-medium text-slate-700">Email</label>
+                <input type="email" name="email" id="email" autocomplete="email" required
+                    class="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label for="password" class="text-sm font-medium text-slate-700">Password</label>
+                <input type="password" name="password" id="password" autocomplete="current-password" required
+                    class="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10">
+            </div>
+
+            <button type="submit"
+                class="mt-1 w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/20">Sign in</button>
         </div>
 
-        <div class="flex flex-col gap-1">
-          <label for="password" class="text-sm font-medium text-slate-700">Password</label>
-          <input type="password" name="password" id="password" required class="rounded-md border border-slate-300 px-3 py-2">
-        </div>
-
-        <button type="submit" class="mt-2 rounded-md bg-slate-900 px-4 py-2 text-white transition-colors hover:bg-slate-700">Sign in</button>
-
-        <p class="text-sm text-slate-600 text-center">Don't have an account? <a href="/sign_up" class="text-slate-900 font-medium hover:underline">Sign up</a></p>
+        <p class="mt-5 text-center text-sm text-slate-500">
+            Don't have an account?
+            <a href="/sign_up" class="font-medium text-slate-900 no-underline hover:underline">Sign up</a>
+        </p>
     </form>
 </main>
 {% endblock %}
